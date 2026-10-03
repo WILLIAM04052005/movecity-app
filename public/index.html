@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movecity — Accueil</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Movecity</h1>
+    <nav class="topnav">
+      <a href="/index.html" aria-current="page">Accueil</a>
+      <a href="/pages/carte.html">Carte</a>
+    </nav>
+    <button id="simple-mode-toggle" aria-pressed="false">Mode simplifié</button>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Statut du serveur</h2>
+      <p id="health-status">Vérification en cours…</p>
+    </section>
+
+    <section class="card">
+      <h2>État des ascenseurs (donnée de test)</h2>
+      <ul id="ascenseurs-liste"></ul>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

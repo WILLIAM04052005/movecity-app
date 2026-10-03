@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movecity — Carte des stations</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Movecity</h1>
+    <nav class="topnav">
+      <a href="/index.html">Accueil</a>
+      <a href="/pages/carte.html" aria-current="page">Carte</a>
+    </nav>
+    <button id="simple-mode-toggle" aria-pressed="false">Mode simplifié</button>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Carte des stations</h2>
+      <p>Vert = ascenseur disponible · Rouge = en panne · Gris = statut inconnu</p>
+      <div id="map" style="height: 420px; border-radius: 8px;" role="img" aria-label="Carte des stations avec statut des ascenseurs"></div>
+      <p id="map-avertissement" class="avertissement" hidden></p>
+    </section>
+
+    <section class="card" id="detail-station" hidden>
+      <h2 id="detail-nom">Station</h2>
+      <p id="detail-statut"></p>
+      <p id="detail-maj"></p>
+      <p id="detail-suggestion" class="avertissement" hidden></p>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/carte.js"></script>
+</body>
+</html>
