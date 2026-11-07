@@ -81,7 +81,7 @@ Le journal n'est lié à **aucune personne** : une ligne dit « une recherche pr
 | Stocker l'adresse pour « améliorer le service » | Collecte inutile et risquée ; la station proche suffit aux statistiques |
 | Réinterroger IDFM à chaque affichage | Inutile (3 publications/jour), fragile, consomme le quota |
 
-## 7. Hypothèses à valider avec l'équipe
+## 7. Hypothèses valider avec l'équipe
 
 1. Durée de conservation du journal (90 jours) — **filière Cybersécurité**.
 2. Licence exacte du jeu « État des ascenseurs » et mentions d'attribution — **Marketing / Juridique**.
