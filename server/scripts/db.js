@@ -1,10 +1,3 @@
-// ============================================================
-// Gestion de la base :  node server/scripts/db.js <migrate|seed|reset|demo>
-//   migrate : crée les tables (idempotent)
-//   seed    : recharge les données de référence + crée l'opérateur (ADMIN_EMAIL / ADMIN_PASSWORD)
-//   reset   : SUPPRIME tout puis migrate + seed  (développement uniquement !)
-//   demo    : remplit le journal avec 600 recherches FICTIVES (pour le dashboard)
-// ============================================================
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');

@@ -1,10 +1,8 @@
-// ============================================================
-// Usage :
 //   npm run sync:ascenseurs                      synchronise depuis IDFM_URL
 //   npm run sync:ascenseurs -- --dry-run         simule : n'écrit rien, montre le rapprochement
 //   npm run sync:ascenseurs -- --file ./ascenseurs.csv   utilise un fichier téléchargé à la main
 //   npm run sync:ascenseurs -- --purge-demo      supprime TOUS les ascenseurs de démonstration (DEMO-n)
-// ============================================================
+
 const config = require('../src/config/env');
 const { pool } = require('../src/config/database');
 const { recuperer } = require('../src/sync/idfm.client');
