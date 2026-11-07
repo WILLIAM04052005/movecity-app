@@ -1,8 +1,3 @@
-/* ============================================================
-   Charte graphique Movecity — MODIFIER LES COULEURS ICI UNIQUEMENT
-   (valeurs relevées sur la maquette d'identité visuelle de l'équipe ;
-   remplacer le vert d'accent par le code exact de la charte)
-   ============================================================ */
 :root {
   --couleur-accent: #90e57e;       /* vert d'accent (valeur approchée) */
   --couleur-secondaire: #c2bfff;
@@ -11,7 +6,7 @@
   --couleur-texte: #222222;
 
   /* Statuts : le vert « disponible » suit l'accent de la charte.
-     Le rouge « panne » est un rouge sémantique hors charte (contraste AA). */
+     Le rouge « panne » est un rouge sémantique hors charte. */
   --statut-ok-fond: var(--couleur-accent);
   --statut-ok-texte: var(--couleur-texte);
   --statut-panne-fond: #c62828;
