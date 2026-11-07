@@ -1,10 +1,5 @@
--- ============================================================
 -- Movecity — Données réelles, pôle Châtelet - Les Halles (station pilote)
--- Coordonnées réelles à ~30 m près (WGS84).
--- Les STATUTS d'ascenseurs sont des données de démonstration (ref DEMO-n),
--- à remplacer par le flux IDFM "État des ascenseurs".
--- Le script efface puis recharge les données de référence (pas les opérateurs).
--- ============================================================
+$
 TRUNCATE journal_recherche, kiosque_ligne, kiosque, ascenseur, station_ligne, ligne, station
   RESTART IDENTITY CASCADE;
 

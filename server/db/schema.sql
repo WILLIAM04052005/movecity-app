@@ -1,14 +1,3 @@
--- ============================================================
--- Movecity — Schéma PostgreSQL v3 (borne / kiosque)
---
--- Principes (manifeste + dossier de cadrage) :
---  * Citoyen ANONYME : aucune table utilisateur public, aucun favori,
---    aucun historique de trajet.
---  * Minimisation : l'adresse tapée n'est JAMAIS stockée.
---  * Seul l'OPÉRATEUR a un compte (accès administration via VPN).
---  * Script idempotent : peut être rejoué sans erreur (IF NOT EXISTS).
--- ============================================================
-
 -- --- STATION ---
 CREATE TABLE IF NOT EXISTS station (
   id_station   INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -34,9 +23,6 @@ CREATE TABLE IF NOT EXISTS station_ligne (
 );
 
 -- --- ASCENSEUR : POSSÈDE — ASCENSEUR (1,1) — (0,n) STATION ---
--- La clé étrangère est du côté (1,1). date_maj = fraîcheur de la donnée
--- (flux IDFM mis à jour ~3 fois par jour). ref_externe = identifiant dans
--- le flux IDFM, clé de synchronisation (upsert) prévue plus tard.
 CREATE TABLE IF NOT EXISTS ascenseur (
   id_ascenseur  INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   statut        VARCHAR(12)  NOT NULL DEFAULT 'inconnu'
@@ -70,7 +56,7 @@ CREATE TABLE IF NOT EXISTS kiosque_ligne (
 -- --- JOURNAL_RECHERCHE : statistiques d'usage SANS donnée personnelle ---
 -- Ni adresse, ni coordonnées : seulement la station la plus proche trouvée,
 -- la langue de l'interface et l'horodatage. Purgé automatiquement
--- (RETENTION_JOURNAL_JOURS, à valider avec la filière Cyber).
+-- (RETENTION_JOURNAL_JOURS, valider avec la filière Cyber).
 CREATE TABLE IF NOT EXISTS journal_recherche (
   id_recherche       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   id_kiosque         INTEGER     NOT NULL REFERENCES kiosque(id_kiosque) ON DELETE CASCADE,
@@ -101,10 +87,6 @@ CREATE INDEX IF NOT EXISTS idx_kiosque_station   ON kiosque(id_station);
 CREATE INDEX IF NOT EXISTS idx_journal_date      ON journal_recherche(date_recherche);
 CREATE INDEX IF NOT EXISTS idx_journal_station   ON journal_recherche(id_station_proche);
 
--- --- Vue : état agrégé des ascenseurs par station ---
--- Règle prudente (identique à celle du front) : une panne l'emporte, puis
--- l'inconnu ; « disponible » seulement si TOUS les ascenseurs le sont.
--- Station sans ascenseur référencé = « inconnu » (on ne devine jamais).
 CREATE OR REPLACE VIEW v_etat_station AS
 SELECT
   s.id_station,
