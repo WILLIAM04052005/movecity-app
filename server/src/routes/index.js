@@ -1,7 +1,3 @@
-// ============================================================
-// Table des routes de l'API (préfixe /api). Chaque ligne = un endpoint :
-//   route → [middleware : limite / validation / authentification] → contrôleur
-// ============================================================
 const express = require('express');
 const config = require('../config/env');
 const schemas = require('../schemas');
@@ -46,7 +42,7 @@ router.post('/ascenseurs', exigerOperateur, valider(schemas.ascenseurs.creer), a
 router.patch('/ascenseurs/:id', exigerOperateur, idParam, valider(schemas.ascenseurs.modifier), ascenseurs.modifier);
 router.delete('/ascenseurs/:id', exigerOperateur, idParam, ascenseurs.supprimer);
 
-// --- Recherche d'adresse (service externe → débit limité) ---
+// Recherche d'adresse
 router.get(
   '/geocode',
   limiteDebit({ fenetreMs: 60_000, max: config.limites.geocodeParMinute }),
@@ -54,7 +50,7 @@ router.get(
   geocode.rechercher
 );
 
-// --- Authentification opérateur (tentatives limitées contre le brute-force) ---
+// Authentification opérateur 
 router.post(
   '/auth/login',
   limiteDebit({ fenetreMs: 15 * 60_000, max: config.limites.loginParQuinzeMinutes }),

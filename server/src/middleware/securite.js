@@ -1,8 +1,5 @@
-// ============================================================
 // Durcissement (threat model : exposition internet 12/16)
 //  * en-têtes de sécurité HTTP (dont une CSP stricte)
-//  * limitation de débit (anti-abus) sur les routes sensibles
-// ============================================================
 const { HttpError } = require('../utils/http');
 
 const CSP = [
@@ -26,12 +23,8 @@ function entetesSecurite(req, res, next) {
   next();
 }
 
-/**
- * Limiteur en mémoire (fenêtre glissante par IP). Suffisant pour une borne ;
- * pour plusieurs instances, passer à un stockage partagé (Redis).
- */
 function limiteDebit({ fenetreMs, max }) {
-  const appels = new Map(); // ip -> [horodatages]
+  const appels = new Map(); 
 
   setInterval(() => {
     const limite = Date.now() - fenetreMs;

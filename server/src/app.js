@@ -1,6 +1,5 @@
-// ============================================================
 // Application Express (sans écoute réseau : facilite les tests).
-// ============================================================
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -22,7 +21,6 @@ app.use('/api', routes);
 app.use('/api', routeIntrouvable);
 
 // --- Front React (build de production : client/dist) ---
-// En développement, Vite (port 5173) sert le front et redirige /api vers ce serveur.
 const dossierFront = path.join(__dirname, '..', '..', 'client', 'dist');
 if (fs.existsSync(dossierFront)) {
   app.use(express.static(dossierFront));
