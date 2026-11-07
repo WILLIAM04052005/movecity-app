@@ -1,0 +1,19 @@
+sequenceDiagram
+  autonumber
+  actor U as Citoyen (borne)
+  participant F as Front React
+  participant A as API Express
+  participant B as Base Adresse Nationale
+  participant P as PostgreSQL
+
+  U->>F: Tape une adresse puis « Rechercher »
+  F->>A: GET /api/geocode?q=…&lang=fr
+  A->>A: Limite de débit + validation (3 à 200 caractères)
+  A->>B: Recherche de l'adresse
+  B-->>A: Libellé + coordonnées
+  A->>P: Station la plus proche (SQL Haversine)
+  A->>P: INSERT journal (station proche, langue, heure)
+  Note over A,P: L'adresse et les coordonnées ne sont JAMAIS enregistrées
+  A-->>F: { libelle, latitude, longitude }
+  F->>F: Trie les stations par distance, affiche les 3 plus proches
+  F-->>U: Liste + trait sur la carte (+ état ascenseur si profil PMR)

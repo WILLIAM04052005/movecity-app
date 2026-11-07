@@ -1,0 +1,235 @@
+/* ============================================================
+   Styles Movecity — toutes les couleurs viennent de theme.css
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: var(--taille-base); }
+html[data-persona='senior'] { font-size: 22px; --zone-tactile: 4.25rem; }
+
+body {
+  margin: 0;
+  font-family: var(--police);
+  color: var(--couleur-texte);
+  background: var(--couleur-fond);
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+input { user-select: text; }
+h1, h2, p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+:focus-visible { outline: 3px solid var(--couleur-texte); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ---------- Boutons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: var(--zone-tactile); padding: 0 1.1rem;
+  font: inherit; font-weight: 700; color: var(--couleur-texte);
+  background: var(--couleur-fond);
+  border: 2px solid var(--couleur-texte); border-radius: 999px;
+  cursor: pointer; touch-action: manipulation;
+}
+.btn svg { flex: none; }
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn--primaire { background: var(--couleur-primaire); }
+.btn--secondaire { background: var(--couleur-secondaire); }
+.btn--accent { background: var(--couleur-accent); }
+.btn--icone { width: var(--zone-tactile); padding: 0; }
+.btn[aria-pressed='true'] { background: var(--couleur-accent); }
+
+/* ---------- Logo ---------- */
+.logo {
+  font-weight: 700; font-size: 1.6rem; line-height: 1;
+  padding: 0.6rem 1rem; background: var(--couleur-primaire);
+  border: 2px solid var(--couleur-texte); border-radius: 1rem;
+}
+.logo--mini { font-size: 1rem; padding: 0.4rem 0.7rem; border-radius: 0.8rem; }
+
+/* ---------- Langue ---------- */
+.langue-switch { display: inline-flex; gap: 0.4rem; }
+.btn--langue { padding: 0 1rem; }
+
+/* ---------- Écran d'accueil ---------- */
+.accueil {
+  min-height: 100dvh; display: flex; flex-direction: column; padding: 1.25rem;
+  background:
+    radial-gradient(circle at 0% 0%, var(--couleur-secondaire) 0 16rem, transparent 16.1rem),
+    radial-gradient(circle at 100% 100%, var(--couleur-primaire) 0 18rem, transparent 18.1rem),
+    var(--couleur-fond);
+}
+.accueil-entete { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.accueil-centre {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 0.75rem; padding: 1rem 0;
+}
+.accueil h1 { font-size: clamp(1.9rem, 4.5vw, 3rem); line-height: 1.15; max-width: 22ch; }
+.accueil-aide { font-size: 1.1rem; max-width: 40ch; }
+.cartes-persona {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.25rem; width: min(62rem, 100%); margin-top: 1.5rem;
+}
+.carte-persona {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
+  min-height: 15rem; padding: 1.5rem 1rem;
+  font: inherit; color: inherit; cursor: pointer; touch-action: manipulation;
+  border: 3px solid var(--couleur-texte); border-radius: 1.5rem; box-shadow: var(--ombre);
+}
+.carte-persona:active { transform: scale(0.98); }
+.carte-persona--touriste { background: var(--couleur-secondaire); }
+.carte-persona--senior { background: var(--couleur-primaire); }
+.carte-persona--pmr { background: var(--couleur-accent); }
+.carte-persona-titre { font-size: 1.7rem; font-weight: 700; }
+.carte-persona-desc { font-size: 1.05rem; }
+
+/* ---------- Écran principal ---------- */
+.ecran-borne { position: fixed; inset: 0; }
+.carte-fond { position: absolute; inset: 0; z-index: 0; isolation: isolate; }
+.carte { width: 100%; height: 100%; font-family: inherit; }
+
+.calques {
+  position: absolute; inset: 0; z-index: 10; padding: 0.75rem; gap: 0.75rem;
+  display: grid; grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  pointer-events: none;
+}
+.calques > * { pointer-events: auto; }
+.zone-basse { pointer-events: none; }
+.zone-basse > * { pointer-events: auto; }
+
+.panneau {
+  background: var(--couleur-fond); color: var(--couleur-texte);
+  border: 2px solid var(--couleur-texte); border-radius: var(--rayon); box-shadow: var(--ombre);
+}
+
+/* Barre haute */
+.barre-haute { grid-column: 1 / -1; display: flex; align-items: center; gap: 1rem; padding: 0.6rem 0.9rem; flex-wrap: wrap; }
+.station-info { flex: 1; min-width: 12rem; }
+.station-nom { font-weight: 700; font-size: 1.1rem; text-align: left; }
+.lignes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.3rem; }
+.lignes-etiquette { font-size: 0.85rem; font-weight: 600; margin-right: 0.25rem; }
+.badge-ligne {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2.2rem; height: 1.9rem; padding: 0 0.55rem; border-radius: 999px;
+  font-weight: 700; font-size: 0.85rem; border: 2px solid var(--couleur-texte);
+}
+
+/* Panneau ascenseurs (PMR) */
+.panneau-ascenseurs { grid-column: 1; grid-row: 2; align-self: start; max-height: 100%; overflow: auto; padding: 1rem; }
+.panneau-ascenseurs h2 { font-size: 1.25rem; margin-bottom: 0.6rem; }
+.resume { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
+.liste-etats { display: grid; gap: 0.6rem; }
+.ligne-etat { border: 2px solid var(--couleur-texte); border-radius: 0.9rem; padding: 0.7rem 0.8rem; }
+.ligne-etat-tete {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 0.75rem;
+  width: 100%; padding: 0; font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left;
+}
+.meta { margin-top: 0.4rem; font-size: 0.9rem; }
+.meta--alerte { font-weight: 700; }
+.suggestion { margin-top: 0.5rem; padding: 0.5rem 0.7rem; font-weight: 600; font-size: 0.95rem; background: var(--couleur-secondaire); border-radius: 0.6rem; }
+
+.badge-statut {
+  display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.7rem;
+  font-weight: 700; font-size: 0.9rem; border-radius: 999px; border: 2px solid var(--couleur-texte);
+}
+.badge-statut--disponible { background: var(--statut-ok-fond); color: var(--statut-ok-texte); }
+.badge-statut--en_panne { background: var(--statut-panne-fond); color: var(--statut-panne-texte); border-color: var(--statut-panne-fond); }
+.badge-statut--inconnu { background: var(--statut-inconnu-fond); color: var(--statut-inconnu-texte); }
+
+/* Zone basse : commandes à gauche, recherche au centre */
+.zone-basse {
+  grid-column: 1 / -1; grid-row: 3; display: grid; align-items: end; gap: 0.75rem;
+  grid-template-columns: 1fr minmax(0, 40rem) 1fr;
+}
+.barre-basse { justify-self: start; display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem; flex-wrap: wrap; }
+
+.recherche { grid-column: 2; padding: 0.75rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
+.recherche-resultats { max-height: 38vh; overflow: auto; }
+.resultats-titre { font-weight: 700; margin-bottom: 0.4rem; }
+.libelle { font-weight: 400; }
+.liste-resultats { display: grid; gap: 0.5rem; }
+.resultat {
+  display: grid; gap: 0.3rem; width: 100%; padding: 0.6rem 0.8rem; font: inherit; color: inherit;
+  text-align: left; background: var(--couleur-fond); border: 2px solid var(--couleur-texte); border-radius: 0.9rem; cursor: pointer;
+}
+.resultat-ligne { display: flex; justify-content: space-between; gap: 0.75rem; }
+.distance { font-weight: 700; white-space: nowrap; }
+.champ-recherche { display: flex; gap: 0.5rem; }
+.champ-recherche input {
+  flex: 1; min-width: 0; min-height: var(--zone-tactile); padding: 0 1.1rem;
+  font: inherit; font-size: 1.05rem; color: var(--couleur-texte);
+  border: 2px solid var(--couleur-texte); border-radius: 999px;
+}
+.erreur { padding: 0.5rem 0.8rem; font-weight: 600; background: var(--couleur-primaire); border-radius: 0.6rem; }
+
+/* Bouton de recentrage de la carte */
+.btn-recentrer { position: absolute; top: 6.5rem; right: 0.75rem; z-index: 5; box-shadow: var(--ombre); }
+
+/* Contrôles de zoom Leaflet adaptés au tactile */
+.carte .leaflet-bar a { width: var(--zone-tactile) !important; height: var(--zone-tactile) !important; line-height: var(--zone-tactile) !important; font-size: 1.8rem !important; color: var(--couleur-texte); }
+.carte .leaflet-bar { border: 2px solid var(--couleur-texte); border-radius: 1rem; overflow: hidden; }
+.carte .leaflet-control-attribution { font-size: 0.7rem; }
+
+/* Marqueurs de carte */
+.mc-kiosque, .mc-station-conteneur, .mc-adresse-conteneur { background: none; border: 0; }
+.mc-kiosque-point {
+  position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+  background: var(--couleur-texte); border-radius: 50%;
+}
+.mc-kiosque-anneau {
+  position: absolute; left: 50%; top: 50%; width: 50px; height: 50px; margin: -25px 0 0 -25px;
+  border: 3px solid var(--couleur-texte); border-radius: 50%; background: rgb(194 191 255 / 0.35);
+}
+.mc-kiosque-pulse {
+  position: absolute; left: 50%; top: 50%; width: 50px; height: 50px; margin: -25px 0 0 -25px;
+  border-radius: 50%; background: var(--couleur-secondaire); animation: pulse 1.8s ease-out infinite;
+}
+@keyframes pulse { from { transform: scale(0.8); opacity: 0.95; } to { transform: scale(2); opacity: 0; } }
+.mc-station {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid #fff; box-shadow: 0 0 0 2px var(--couleur-texte); font-weight: 700; font-size: 1.05rem;
+}
+.mc-station--disponible { background: var(--statut-ok-fond); color: var(--statut-ok-texte); }
+.mc-station--en_panne { background: var(--statut-panne-fond); color: var(--statut-panne-texte); }
+.mc-station--inconnu { background: var(--statut-inconnu-fond); color: var(--statut-inconnu-texte); }
+.mc-station--neutre { width: 22px; height: 22px; margin: 6px; background: var(--couleur-secondaire); }
+.mc-adresse {
+  display: block; width: 26px; height: 26px; background: var(--couleur-primaire);
+  border: 3px solid var(--couleur-texte); border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+}
+.mc-tooltip { font-family: var(--police); font-weight: 600; color: var(--couleur-texte); border: 2px solid var(--couleur-texte); border-radius: 0.6rem; }
+
+/* ---------- Modales ---------- */
+.modal-fond { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 1rem; background: rgb(34 34 34 / 0.55); }
+.modal { display: grid; gap: 1rem; width: min(30rem, 100%); padding: 1.5rem; background: var(--couleur-fond); border: 3px solid var(--couleur-texte); border-radius: 1.5rem; box-shadow: var(--ombre); }
+.modal h2 { font-size: 1.5rem; }
+
+/* ---------- Chargement / erreur ---------- */
+.ecran-etat { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 1rem; font-size: 1.2rem; }
+
+/* ---------- Écrans étroits (téléphone / borne en portrait) ---------- */
+@media (max-width: 900px) {
+  .calques { grid-template-columns: minmax(0, 1fr); }
+  .panneau-ascenseurs { max-height: 38vh; }
+  .zone-basse { grid-template-columns: minmax(0, 1fr); }
+  .recherche { grid-column: 1; order: -1; }
+  .barre-basse { justify-self: stretch; justify-content: space-between; }
+  .carte .leaflet-control-zoom { display: none; }
+  .btn-recentrer { top: 50%; transform: translateY(-50%); }
+}
+@media (max-width: 600px) {
+  .barre-haute { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.5rem 0.6rem; }
+  .station-info { display: contents; }
+  .station-nom { grid-column: 2; grid-row: 1; }
+  .barre-haute > .btn { grid-column: 3; grid-row: 1; }
+  .lignes { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
+  .lignes-etiquette { display: none; }
+  .badge-ligne { min-width: 2rem; height: 1.6rem; padding: 0 0.4rem; font-size: 0.75rem; }
+  .barre-haute .btn { width: var(--zone-tactile); height: var(--zone-tactile); padding: 0; font-size: 0; gap: 0; }
+  .champ-recherche .btn[type='submit'] { width: var(--zone-tactile); padding: 0; font-size: 0; gap: 0; }
+}

@@ -1,0 +1,35 @@
+flowchart LR
+  subgraph USERS["Usagers"]
+    C["Citoyen<br/>Touriste · Senior · PMR<br/>anonyme, sans compte"]
+    O["Opérateur<br/>accès via VPN"]
+  end
+
+  subgraph BORNE["Borne en station — navigateur plein écran"]
+    FE["Front React + TypeScript<br/>Accueil 3 profils · Carte Leaflet<br/>Recherche · Panneau PMR · Aide<br/>Retour auto à l'accueil"]
+  end
+
+  subgraph SRV["Serveur Node.js / Express"]
+    MW["Middleware<br/>en-têtes + CSP · limite de débit<br/>validation zod · JWT"]
+    RT["Routes /api"]
+    CT["Contrôleurs"]
+    MD["Modèles<br/>SQL paramétré (pg)"]
+    JB["Tâche quotidienne<br/>purge du journal"]
+  end
+
+  DB[("PostgreSQL<br/>8 tables + 1 vue")]
+  BAN["Base Adresse Nationale<br/>géocodage"]
+  OSM["Tuiles OpenStreetMap"]
+  IDFM["IDFM Open Data<br/>état des ascenseurs<br/>publié 3 fois par jour"]
+  PRIM["PRIM / Navitia<br/>calcul d'itinéraires"]
+
+  C --> FE
+  FE -->|"HTTPS · /api"| MW --> RT --> CT --> MD --> DB
+  FE -->|tuiles| OSM
+  CT -->|"adresse tapée"| BAN
+  JB --> DB
+  O -->|"VPN + jeton JWT"| MW
+  IDFM -.->|"synchronisation planifiée (prévu)"| MD
+  CT -.->|"itinéraires (prévu)"| PRIM
+
+  classDef prevu stroke-dasharray: 6 4,fill:#f4f4f4,stroke:#777,color:#444
+  class IDFM,PRIM prevu

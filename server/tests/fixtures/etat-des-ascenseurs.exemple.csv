@@ -1,0 +1,7 @@
+liftId;liftStateUpdate;liftPrivateId;liftSituation;liftDirection;liftStatus;liftReason;ZdCId;ZdCName;ZdCXEpsg2154;ZdCYEpsg2154
+TEST-L1;2026-10-30T07:05:00+01:00;P1;Hall principal vers quais;Direction Vincennes;available;;TEST-ZDC-1;Châtelet-Les Halles;652000;6862000
+TEST-L2;2026-10-30T07:05:00+01:00;P2;Quai RER A;Direction Marne-la-Vallée;notavailable;liftFailure;TEST-ZDC-1;Châtelet-Les Halles;652000;6862000
+TEST-L3;2026-10-30T07:05:00+01:00;P3;Accès rue Berger;;unknown;;TEST-ZDC-1;Châtelet-Les Halles;652000;6862000
+TEST-L4;2026-10-30T13:10:00+01:00;P4;Quai M1;Direction La Défense;available;;TEST-ZDC-2;Hôtel de Ville;652500;6862200
+TEST-L5;2026-10-30T13:10:00+01:00;P5;Quai;;notavailable;closedForMaintenance;TEST-ZDC-3;Gare Fictive;650000;6860000
+;2026-10-30T13:10:00+01:00;P6;Sans identifiant;;available;;TEST-ZDC-2;Hôtel de Ville;652500;6862200

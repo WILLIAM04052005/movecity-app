@@ -1,0 +1,52 @@
+classDiagram
+  direction LR
+  class Station {
+    +int id_station
+    +string nom_station
+    +string ref_zdc
+    +float latitude
+    +float longitude
+  }
+  class Ligne {
+    +int id_ligne
+    +string code_ligne
+    +string type_ligne
+  }
+  class Ascenseur {
+    +int id_ascenseur
+    +StatutAscenseur statut
+    +string cause_panne
+    +datetime date_maj
+    +string ref_externe
+    +string libelle
+  }
+  class Kiosque {
+    +int id_kiosque
+    +string nom_emplacement
+    +float latitude
+    +float longitude
+  }
+  class JournalRecherche {
+    +int id_recherche
+    +string langue
+    +datetime date_recherche
+  }
+  class Operateur {
+    +int id_operateur
+    +string email
+    -string password_hash
+    +datetime date_creation
+  }
+  class StatutAscenseur {
+    <<enumeration>>
+    disponible
+    en_panne
+    inconnu
+  }
+  Station "0..*" -- "0..*" Ligne : dessert
+  Station "1" o-- "0..*" Ascenseur : possède
+  Station "1" o-- "0..*" Kiosque : accueille
+  Kiosque "0..*" -- "0..*" Ligne : affiche
+  Kiosque "1" o-- "0..*" JournalRecherche : enregistre
+  Station "0..1" <.. "0..*" JournalRecherche : station la plus proche
+  Ascenseur ..> StatutAscenseur

@@ -1,0 +1,58 @@
+erDiagram
+  STATION {
+    int id_station PK
+    varchar nom_station
+    varchar ref_zdc UK
+    double latitude
+    double longitude
+  }
+  LIGNE {
+    int id_ligne PK
+    varchar code_ligne UK
+    varchar type_ligne
+  }
+  STATION_LIGNE {
+    int id_station PK, FK
+    int id_ligne PK, FK
+  }
+  ASCENSEUR {
+    int id_ascenseur PK
+    varchar statut
+    varchar cause_panne
+    timestamptz date_maj
+    varchar ref_externe UK
+    varchar libelle
+    int id_station FK
+  }
+  KIOSQUE {
+    int id_kiosque PK
+    varchar nom_emplacement
+    double latitude
+    double longitude
+    int id_station FK
+  }
+  KIOSQUE_LIGNE {
+    int id_kiosque PK, FK
+    int id_ligne PK, FK
+  }
+  JOURNAL_RECHERCHE {
+    bigint id_recherche PK
+    int id_kiosque FK
+    int id_station_proche FK
+    varchar langue
+    timestamptz date_recherche
+  }
+  OPERATEUR {
+    int id_operateur PK
+    varchar email UK
+    text password_hash
+    timestamptz date_creation
+  }
+  STATION ||--o{ STATION_LIGNE : "DESSERT"
+  LIGNE ||--o{ STATION_LIGNE : "DESSERT"
+  STATION ||--o{ ASCENSEUR : "POSSÈDE"
+  STATION ||--o{ KIOSQUE : "ACCUEILLE"
+  KIOSQUE ||--o{ KIOSQUE_LIGNE : "AFFICHE"
+  LIGNE ||--o{ KIOSQUE_LIGNE : "AFFICHE"
+  KIOSQUE ||--o{ JOURNAL_RECHERCHE : "ENREGISTRE"
+  STATION |o--o{ JOURNAL_RECHERCHE : "EST_PROCHE_DE"

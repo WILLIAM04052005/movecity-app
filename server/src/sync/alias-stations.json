@@ -1,0 +1,9 @@
+{
+  "_commentaire": "Nom de zone IDFM (ZdCName) -> nom de NOTRE station. Sert quand les deux noms diffèrent. Les clés commençant par _ sont ignorées. À compléter après un 'npm run sync:ascenseurs -- --dry-run'.",
+  "Châtelet": "Châtelet - Les Halles",
+  "Châtelet-Les Halles": "Châtelet - Les Halles",
+  "Les Halles": "Châtelet - Les Halles",
+  "Saint-Michel": "Saint-Michel - Notre-Dame",
+  "Saint-Michel Notre-Dame": "Saint-Michel - Notre-Dame",
+  "Louvre-Rivoli": "Louvre - Rivoli"
+}

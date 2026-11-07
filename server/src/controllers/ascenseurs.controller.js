@@ -1,0 +1,43 @@
+const ascenseurs = require('../models/ascenseurs.model');
+const { HttpError, asyncHandler } = require('../utils/http');
+
+/** GET /api/ascenseurs?statut=&id_station= */
+exports.lister = asyncHandler(async (req, res) => {
+  res.json(await ascenseurs.lister(req.query));
+});
+
+/** GET /api/ascenseurs/stats?limite= : vue « accessibilité » de la borne */
+exports.statistiques = asyncHandler(async (req, res) => {
+  res.json(await ascenseurs.statistiques(req.query.limite));
+});
+
+/** GET /api/ascenseurs/:id */
+exports.detail = asyncHandler(async (req, res) => {
+  const a = await ascenseurs.trouver(req.params.id);
+  if (!a) throw new HttpError(404, 'Ascenseur introuvable.');
+  res.json(a);
+});
+
+/** POST /api/ascenseurs (opérateur) */
+exports.creer = asyncHandler(async (req, res) => {
+  const donnees = { ...req.body };
+  if (donnees.statut !== 'en_panne') donnees.cause_panne = null; // règle de gestion
+  res.status(201).json(await ascenseurs.creer(donnees));
+});
+
+/** PATCH /api/ascenseurs/:id (opérateur) : nouveau statut / cause de panne */
+exports.modifier = asyncHandler(async (req, res) => {
+  const champs = { ...req.body };
+  // Un ascenseur qui n'est plus « en panne » n'a plus de cause de panne.
+  if (champs.statut && champs.statut !== 'en_panne') champs.cause_panne = null;
+
+  const a = await ascenseurs.modifier(req.params.id, champs);
+  if (!a) throw new HttpError(404, 'Ascenseur introuvable.');
+  res.json(a);
+});
+
+/** DELETE /api/ascenseurs/:id (opérateur) */
+exports.supprimer = asyncHandler(async (req, res) => {
+  if (!(await ascenseurs.supprimer(req.params.id))) throw new HttpError(404, 'Ascenseur introuvable.');
+  res.status(204).end();
+});

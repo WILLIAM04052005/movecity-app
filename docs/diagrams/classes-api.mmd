@@ -1,0 +1,117 @@
+classDiagram
+  direction LR
+
+  class Routes {
+    <<routes/index.js>>
+  }
+  class Middleware {
+    <<middleware>>
+    +entetesSecurite()
+    +limiteDebit(fenetre, max)
+    +valider(schema, source)
+    +exigerOperateur()
+    +gestionErreurs()
+  }
+
+  class HealthController {
+    +etat() GET /health
+  }
+  class KiosqueController {
+    +configuration() GET /kiosk/config
+  }
+  class LignesController {
+    +lister() GET /lignes
+  }
+  class StationsController {
+    +lister() GET /stations
+    +proches() GET /stations/nearest
+    +detail() GET /stations/:id
+    +creer() POST /stations 🔒
+    +modifier() PUT /stations/:id 🔒
+    +supprimer() DELETE /stations/:id 🔒
+  }
+  class AscenseursController {
+    +lister() GET /ascenseurs
+    +statistiques() GET /ascenseurs/stats
+    +detail() GET /ascenseurs/:id
+    +creer() POST /ascenseurs 🔒
+    +modifier() PATCH /ascenseurs/:id 🔒
+    +supprimer() DELETE /ascenseurs/:id 🔒
+  }
+  class GeocodeController {
+    +rechercher() GET /geocode
+  }
+  class AuthController {
+    +login() POST /auth/login
+    +moi() GET /auth/me 🔒
+  }
+  class StatsController {
+    +usage() GET /stats/usage 🔒
+  }
+
+  class KiosqueModel {
+    +configuration(idKiosque)
+  }
+  class LignesModel {
+    +lister()
+  }
+  class StationsModel {
+    +lister()
+    +trouver(id)
+    +plusProches(lat, lon, limite)
+    +creer(donnees)
+    +modifier(id, donnees)
+    +supprimer(id)
+  }
+  class AscenseursModel {
+    +lister(filtres)
+    +trouver(id)
+    +creer(donnees)
+    +modifier(id, champs)
+    +supprimer(id)
+    +statistiques(limite)
+  }
+  class JournalModel {
+    +enregistrer(recherche)
+    +purger(jours)
+    +statistiques(jours)
+  }
+  class OperateursModel {
+    +trouverParEmail(email)
+    +trouverParId(id)
+    +creer(email, hash)
+  }
+  class PostgreSQL {
+    <<database>>
+    8 tables + v_etat_station
+  }
+  class BaseAdresseNationale {
+    <<service externe>>
+  }
+
+  Routes ..> Middleware : utilise
+  Routes --> HealthController
+  Routes --> KiosqueController
+  Routes --> LignesController
+  Routes --> StationsController
+  Routes --> AscenseursController
+  Routes --> GeocodeController
+  Routes --> AuthController
+  Routes --> StatsController
+
+  KiosqueController --> KiosqueModel
+  LignesController --> LignesModel
+  StationsController --> StationsModel
+  AscenseursController --> AscenseursModel
+  GeocodeController --> StationsModel
+  GeocodeController --> JournalModel
+  GeocodeController ..> BaseAdresseNationale
+  AuthController --> OperateursModel
+  StatsController --> JournalModel
+
+  KiosqueModel --> PostgreSQL
+  LignesModel --> PostgreSQL
+  StationsModel --> PostgreSQL
+  AscenseursModel --> PostgreSQL
+  JournalModel --> PostgreSQL
+  OperateursModel --> PostgreSQL

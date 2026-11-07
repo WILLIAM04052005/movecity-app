@@ -1,0 +1,16 @@
+flowchart TB
+  subgraph APP["App.tsx"]
+    P["KioskProvider<br/>état global : profil, langue,<br/>recherche, données API"]
+    I["useInactivite<br/>avertissement puis retour accueil"]
+  end
+  P --> W["WelcomeScreen<br/>« Vous êtes ? »<br/>Touriste · Senior · PMR"]
+  P --> K["KioskScreen"]
+  K --> MAP["MapView<br/>Leaflet plein écran<br/>position réelle de la borne"]
+  K --> TOP["TopBar<br/>station + correspondances + Aide"]
+  K --> EP["ElevatorPanel<br/>profil PMR uniquement"]
+  K --> SP["SearchPanel<br/>adresse → 3 stations proches"]
+  K --> BB["BottomBar<br/>raccourci PMR · FR/EN · changer de profil"]
+  K --> HM["HelpModal"]
+  P --> D["useDonneesBorne<br/>GET kiosk/config · stations · ascenseurs<br/>rafraîchi toutes les 5 min"]
+  D --> API[("API Express")]
+  SP --> API

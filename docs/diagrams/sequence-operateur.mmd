@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor O as Opérateur (VPN)
+  participant A as API Express
+  participant P as PostgreSQL
+
+  O->>A: POST /api/auth/login { email, password }
+  A->>P: Cherche l'opérateur (e-mail insensible à la casse)
+  A->>A: bcrypt.compare (même durée si e-mail inconnu)
+  A-->>O: 200 { token JWT, expire dans 2 h } ou 401
+  O->>A: PATCH /api/ascenseurs/3 { statut: "en_panne", cause_panne } + Bearer
+  A->>A: Vérifie le jeton, puis que le compte existe encore
+  A->>A: Valide le corps (zod)
+  A->>P: UPDATE ascenseur … date_maj = now()
+  A-->>O: 200 ascenseur mis à jour
+  O->>A: GET /api/stats/usage?jours=30 + Bearer
+  A->>P: Agrégats anonymes du journal (par station, langue, heure, jour)
+  A-->>O: 200 statistiques pour le dashboard

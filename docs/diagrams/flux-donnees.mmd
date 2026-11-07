@@ -1,0 +1,29 @@
+flowchart LR
+  subgraph SRC["Sources"]
+    S1["IDFM — état des ascenseurs<br/>3 publications par jour"]
+    S2["Base Adresse Nationale<br/>à la demande"]
+    S3["PRIM — itinéraires<br/>à la demande (prévu)"]
+    S4["Saisie opérateur<br/>correction manuelle"]
+  end
+  subgraph DBX["PostgreSQL"]
+    T1["station · ligne · kiosque<br/>données de référence"]
+    T2["ascenseur<br/>statut + date_maj"]
+    T3["journal_recherche<br/>anonyme, purgé"]
+    V1["vue v_etat_station<br/>statut agrégé prudent"]
+  end
+  subgraph OUT["Restitution"]
+    U1["Borne : panneau PMR<br/>carte, suggestion de repli"]
+    U2["Borne : vue accessibilité<br/>taux de pannes (prévu)"]
+    U3["Opérateur : dashboard<br/>statistiques d'usage (prévu)"]
+  end
+  S1 -.->|"sync (prévu)"| T2
+  S4 -->|"PATCH /ascenseurs"| T2
+  S2 -->|"coordonnées → station proche"| T3
+  S3 -.-> U1
+  T1 --> V1
+  T2 --> V1
+  V1 --> U1
+  T2 --> U2
+  T3 --> U3
+  classDef prevu stroke-dasharray: 6 4,fill:#f4f4f4,stroke:#777,color:#444
+  class S1,S3,U2,U3 prevu
