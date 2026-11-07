@@ -1,8 +1,6 @@
-// ============================================================
 // Tests d'intégration de l'API : vrai PostgreSQL (base *_test), vrai Express.
 // Lancer :  npm run test:api      (la base de test est VIDÉE à chaque exécution)
 // Pré-requis : CREATE DATABASE movecity_test OWNER movecity;
-// ============================================================
 process.env.NODE_ENV = 'test';
 process.env.LIMITE_GEOCODE_PAR_MINUTE = '6';
 
@@ -28,7 +26,6 @@ let serveur;
 let base;
 const fetchOriginal = global.fetch;
 
-// --- Simulation de la Base Adresse Nationale (aucun appel réseau pendant les tests) ---
 let reponseBan = { status: 200, body: { features: [{ geometry: { coordinates: [2.3606, 48.8559] }, properties: { label: '10 Rue de Rivoli 75004 Paris' } }] } };
 global.fetch = (url, options) => {
   if (String(url).startsWith(config.banUrl)) {
