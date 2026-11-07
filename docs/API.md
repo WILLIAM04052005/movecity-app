@@ -1,133 +1,8 @@
 # Movecity — API REST, diagramme de classes et tests Postman (v3)
 
-Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "message", "details": [...] }`.
-🔒 = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
+Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "message", "details": [...] }`. = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
 
-## 1. Diagramme de classes avec les endpoints
-
-```mermaid
-classDiagram
-  direction LR
-
-  class Routes {
-    <<routes/index.js>>
-  }
-  class Middleware {
-    <<middleware>>
-    +entetesSecurite()
-    +limiteDebit(fenetre, max)
-    +valider(schema, source)
-    +exigerOperateur()
-    +gestionErreurs()
-  }
-
-  class HealthController {
-    +etat() GET /health
-  }
-  class KiosqueController {
-    +configuration() GET /kiosk/config
-  }
-  class LignesController {
-    +lister() GET /lignes
-  }
-  class StationsController {
-    +lister() GET /stations
-    +proches() GET /stations/nearest
-    +detail() GET /stations/:id
-    +creer() POST /stations 🔒
-    +modifier() PUT /stations/:id 🔒
-    +supprimer() DELETE /stations/:id 🔒
-  }
-  class AscenseursController {
-    +lister() GET /ascenseurs
-    +statistiques() GET /ascenseurs/stats
-    +detail() GET /ascenseurs/:id
-    +creer() POST /ascenseurs 🔒
-    +modifier() PATCH /ascenseurs/:id 🔒
-    +supprimer() DELETE /ascenseurs/:id 🔒
-  }
-  class GeocodeController {
-    +rechercher() GET /geocode
-  }
-  class AuthController {
-    +login() POST /auth/login
-    +moi() GET /auth/me 🔒
-  }
-  class StatsController {
-    +usage() GET /stats/usage 🔒
-  }
-
-  class KiosqueModel {
-    +configuration(idKiosque)
-  }
-  class LignesModel {
-    +lister()
-  }
-  class StationsModel {
-    +lister()
-    +trouver(id)
-    +plusProches(lat, lon, limite)
-    +creer(donnees)
-    +modifier(id, donnees)
-    +supprimer(id)
-  }
-  class AscenseursModel {
-    +lister(filtres)
-    +trouver(id)
-    +creer(donnees)
-    +modifier(id, champs)
-    +supprimer(id)
-    +statistiques(limite)
-  }
-  class JournalModel {
-    +enregistrer(recherche)
-    +purger(jours)
-    +statistiques(jours)
-  }
-  class OperateursModel {
-    +trouverParEmail(email)
-    +trouverParId(id)
-    +creer(email, hash)
-  }
-  class PostgreSQL {
-    <<database>>
-    8 tables + v_etat_station
-  }
-  class BaseAdresseNationale {
-    <<service externe>>
-  }
-
-  Routes ..> Middleware : utilise
-  Routes --> HealthController
-  Routes --> KiosqueController
-  Routes --> LignesController
-  Routes --> StationsController
-  Routes --> AscenseursController
-  Routes --> GeocodeController
-  Routes --> AuthController
-  Routes --> StatsController
-
-  KiosqueController --> KiosqueModel
-  LignesController --> LignesModel
-  StationsController --> StationsModel
-  AscenseursController --> AscenseursModel
-  GeocodeController --> StationsModel
-  GeocodeController --> JournalModel
-  GeocodeController ..> BaseAdresseNationale
-  AuthController --> OperateursModel
-  StatsController --> JournalModel
-
-  KiosqueModel --> PostgreSQL
-  LignesModel --> PostgreSQL
-  StationsModel --> PostgreSQL
-  AscenseursModel --> PostgreSQL
-  JournalModel --> PostgreSQL
-  OperateursModel --> PostgreSQL
-```
-
-Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrôleurs** (un endpoint = une méthode) → **Modèles** (SQL) → PostgreSQL.
-
-## 2. Endpoints
+## Endpoints
 
 ### Santé et borne (publics)
 
@@ -144,9 +19,9 @@ Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrô
 | GET | `/stations` | — | Stations + codes de lignes + `statut_ascenseur` agrégé | 200 |
 | GET | `/stations/nearest` | `lat`, `lon` (requis), `limit` (1–20, défaut 3) | Stations les plus proches, avec `distance_km` | 200, 400 |
 | GET | `/stations/:id` | — | Détail d'une station | 200, 400, 404 |
-| POST 🔒 | `/stations` | `{ nom_station, latitude, longitude, lignes?: ["M1"] }` | Crée (transaction) | 201, 400, 401 |
-| PUT 🔒 | `/stations/:id` | au moins un champ ; `lignes` **remplace** les lignes | Modifie | 200, 400, 401, 404 |
-| DELETE 🔒 | `/stations/:id` | — | Supprime | 204, 401, 404, **409** si elle héberge une borne |
+| POST | `/stations` | `{ nom_station, latitude, longitude, lignes?: ["M1"] }` | Crée (transaction) | 201, 400, 401 |
+| PUT | `/stations/:id` | au moins un champ ; `lignes` **remplace** les lignes | Modifie | 200, 400, 401, 404 |
+| DELETE | `/stations/:id` | — | Supprime | 204, 401, 404, **409** si elle héberge une borne |
 
 ### Ascenseurs
 
@@ -155,9 +30,9 @@ Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrô
 | GET | `/ascenseurs` | `statut?`, `id_station?` | Liste filtrable | 200, 400 |
 | GET | `/ascenseurs/stats` | `limite?` (1–20, défaut 5) | **Vue accessibilité de la borne** : taux de pannes, pannes par ligne, stations les moins accessibles | 200 |
 | GET | `/ascenseurs/:id` | — | Détail | 200, 404 |
-| POST 🔒 | `/ascenseurs` | `{ id_station, statut?, cause_panne?, ref_externe? }` | Crée | 201, 400, 409 |
-| PATCH 🔒 | `/ascenseurs/:id` | `statut?`, `cause_panne?` (au moins un) | Met à jour et rafraîchit `date_maj` ; **efface la cause si le statut n'est plus `en_panne`** | 200, 400, 404 |
-| DELETE 🔒 | `/ascenseurs/:id` | — | Supprime | 204, 404 |
+| POST | `/ascenseurs` | `{ id_station, statut?, cause_panne?, ref_externe? }` | Crée | 201, 400, 409 |
+| PATCH | `/ascenseurs/:id` | `statut?`, `cause_panne?` (au moins un) | Met à jour et rafraîchit `date_maj` ; **efface la cause si le statut n'est plus `en_panne`** | 200, 400, 404 |
+| DELETE | `/ascenseurs/:id` | — | Supprime | 204, 404 |
 
 ### Recherche d'adresse
 
@@ -170,8 +45,8 @@ Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrô
 | Méthode | Route | Corps / paramètres | Rôle | Réponses |
 |---|---|---|---|---|
 | POST | `/auth/login` | `{ email, password }` | Renvoie `{ token, token_type, expires_in, operateur }`. **10 essais / 15 min** | 200, 400, 401, 429 |
-| GET 🔒 | `/auth/me` | — | Opérateur du jeton | 200, 401 |
-| GET 🔒 | `/stats/usage` | `jours` (1–365, défaut 30) | Recherches par station, langue, heure (0–23), jour | 200, 400, 401 |
+| GET | `/auth/me` | — | Opérateur du jeton | 200, 401 |
+| GET | `/stats/usage` | `jours` (1–365, défaut 30) | Recherches par station, langue, heure (0–23), jour | 200, 400, 401 |
 
 ### Exemple de réponse : `GET /ascenseurs/stats`
 
@@ -197,7 +72,7 @@ CREATE DATABASE movecity_test OWNER movecity ENCODING 'UTF8';   -- uniquement po
 ```
 
 ```bash
-copy .env.example .env        # Windows (Linux/Mac : cp)  → puis renseigner DB_USER, DB_PASSWORD, DB_NAME, JWT_SECRET
+copy .env.example .env        # Windows (Linux/Mac : cp)  - puis renseigner DB_USER, DB_PASSWORD, DB_NAME, JWT_SECRET
 npm install
 npm run db:migrate            # crée les tables
 npm run db:seed               # données de Châtelet + opérateur (ADMIN_EMAIL / ADMIN_PASSWORD)
@@ -207,7 +82,7 @@ npm run dev                   # API :3000 + front :5173
 
 Variables de `.env` : `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (ou `DATABASE_URL`), `DB_SSL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `KIOSK_ID`, `RETENTION_JOURNAL_JOURS`, `PORT`.
 
-Autres commandes : `npm run db:reset` (⚠ supprime tout, développement uniquement) · `npm run operateur:creer -- email "motDePasse12+"`.
+Autres commandes : `npm run db:reset` (supprime tout, développement uniquement) · `npm run operateur:creer -- email "motDePasse12+"`.
 
 ## 4. Tester avec Postman
 
