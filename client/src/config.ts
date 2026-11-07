@@ -1,5 +1,3 @@
-// Réglages de la borne, regroupés au même endroit pour être faciles à ajuster.
-
 /** Inactivité avant l'avertissement « Êtes-vous toujours là ? » (ms). */
 export const INACTIVITE_MS = Number(import.meta.env.VITE_INACTIVITE_MS) || 60_000;
 

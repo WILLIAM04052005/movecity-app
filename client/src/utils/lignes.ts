@@ -1,5 +1,4 @@
 // Couleurs d'identification des lignes (repères visuels proches de ceux d'IDFM).
-// À ajuster ici si besoin : le texte est toujours affiché, la couleur n'est
 // jamais le seul indice.
 interface CouleurLigne { fond: string; texte: string }
 
