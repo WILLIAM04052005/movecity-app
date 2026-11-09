@@ -1,7 +1,5 @@
-// ============================================================
 // Appels API de l'espace opérateur. Le jeton JWT reste EN MÉMOIRE (jamais dans
 // localStorage) : un rechargement de la page déconnecte, ce qui est voulu.
-// ============================================================
 import type { Ascenseur, Ligne, Station, StatsAscenseurs, StatutAscenseur } from '../types';
 
 export class ErreurApi extends Error {

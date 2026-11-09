@@ -35,7 +35,7 @@ export function HistogrammeHeures({ donnees }: { donnees: StatsUsage['par_heure'
 
 export interface LigneBarre { etiquette: React.ReactNode; valeur: number; texte: string }
 
-/** Barres horizontales avec valeur écrite (jamais la longueur seule). */
+/** Barres horizontales avec valeur écrite */
 export function Barres({ lignes, max }: { lignes: LigneBarre[]; max?: number }) {
   const m = max ?? Math.max(1, ...lignes.map(l => l.valeur));
   return (

@@ -35,7 +35,7 @@ export function Connexion({ surConnexion, info }: { surConnexion: (jeton: string
       <form className="panneau op-carte-connexion" onSubmit={soumettre} noValidate>
         <div className="op-logo">Move<br />City</div>
         <h1>Espace opérateur</h1>
-        <p className="op-note">Accès réservé aux opérateurs, via le VPN. Les citoyens n’ont pas de compte.</p>
+        <p className="op-note">Accès réservé aux opérateurs, via le VPN.</p>
 
         {info && <Message type="erreur">{info}</Message>}
 
@@ -53,7 +53,7 @@ export function Connexion({ surConnexion, info }: { surConnexion: (jeton: string
         <button type="submit" className="btn btn--accent" disabled={envoi || !email || !motDePasse}>
           {envoi ? 'Connexion…' : 'Se connecter'}
         </button>
-        <p className="op-aide">10 tentatives maximum par 15 minutes. Session de 2 h.</p>
+        <p className="op-aide">10 tentatives maximum par 15 minutes.</p>
       </form>
     </main>
   );
