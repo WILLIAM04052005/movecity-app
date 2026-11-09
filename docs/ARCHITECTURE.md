@@ -1,6 +1,6 @@
 # Movecity — Documentation d'architecture technique (v3)
 
-> Périmètre : filière **Développement web**. Dernière mise à jour : 30/10/2026.
+> Périmètre : filière **Développement web**. Dernière mise à jour : 10/11/2026.
 > Les schémas sont en Mermaid (affichés directement par GitHub / VS Code) ; leurs images sont dans `docs/img/`, leurs sources dans `docs/diagrams/`.
 
 ## 1. Objectif et périmètre
@@ -246,5 +246,5 @@ sequenceDiagram
 2. **PRIM** : compte et acceptation des CGU requis ; quotas à vérifier sur le compte de l'équipe ; option « fauteuil roulant » à confirmer. Prévoir un **cache** pour ne pas épuiser le quota quotidien.
 3. **Interface opérateur** (connexion + dashboard ≥ 3 visualisations) : l'API est prête (`/auth/login`, `/stats/usage`, `/ascenseurs/stats`), l'interface reste à construire.
 4. **Clavier tactile** à l'écran.
-5. **Hébergement, VPN, mode kiosque, intégration continue** : à décider avec l'équipe.
-6. **Fond de carte** : l'usage intensif des tuiles OpenStreetMap est encadré par leur politique ; à revoir avant un vrai déploiement.
+5. **Hébergement, VPN, mode kiosque, intégration continue** : Je décide avec l'équipe.
+6. **Fond de carte** : l'usage intensif des tuiles OpenStreetMap est encadré par leur politique je me rassure avant un vrai déploiement.
