@@ -1,15 +1,9 @@
-# Movecity — API REST, diagramme de classes et tests Postman (v3)
+# Movecity — API REST et tests Postman 
 
 Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "message", "details": [...] }`.
-🔒 = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
+Cle = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
 
-## 1. Diagramme de classes avec les endpoints
-
-{{mmd:classes-api}}
-
-Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrôleurs** (un endpoint = une méthode) → **Modèles** (SQL) → PostgreSQL.
-
-## 2. Endpoints
+## Endpoints
 
 ### Santé et borne (publics)
 
@@ -26,9 +20,9 @@ Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrô
 | GET | `/stations` | — | Stations + codes de lignes + `statut_ascenseur` agrégé | 200 |
 | GET | `/stations/nearest` | `lat`, `lon` (requis), `limit` (1–20, défaut 3) | Stations les plus proches, avec `distance_km` | 200, 400 |
 | GET | `/stations/:id` | — | Détail d'une station | 200, 400, 404 |
-| POST 🔒 | `/stations` | `{ nom_station, latitude, longitude, lignes?: ["M1"] }` | Crée (transaction) | 201, 400, 401 |
-| PUT 🔒 | `/stations/:id` | au moins un champ ; `lignes` **remplace** les lignes | Modifie | 200, 400, 401, 404 |
-| DELETE 🔒 | `/stations/:id` | — | Supprime | 204, 401, 404, **409** si elle héberge une borne |
+| POST | `/stations` | `{ nom_station, latitude, longitude, lignes?: ["M1"] }` | Crée (transaction) | 201, 400, 401 |
+| PUT | `/stations/:id` | au moins un champ ; `lignes` **remplace** les lignes | Modifie | 200, 400, 401, 404 |
+| DELETE | `/stations/:id` | — | Supprime | 204, 401, 404, **409** si elle héberge une borne |
 
 ### Ascenseurs
 
@@ -37,9 +31,9 @@ Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrô
 | GET | `/ascenseurs` | `statut?`, `id_station?` | Liste filtrable | 200, 400 |
 | GET | `/ascenseurs/stats` | `limite?` (1–20, défaut 5) | **Vue accessibilité de la borne** : taux de pannes, pannes par ligne, stations les moins accessibles | 200 |
 | GET | `/ascenseurs/:id` | — | Détail | 200, 404 |
-| POST 🔒 | `/ascenseurs` | `{ id_station, statut?, cause_panne?, ref_externe? }` | Crée | 201, 400, 409 |
-| PATCH 🔒 | `/ascenseurs/:id` | `statut?`, `cause_panne?` (au moins un) | Met à jour et rafraîchit `date_maj` ; **efface la cause si le statut n'est plus `en_panne`** | 200, 400, 404 |
-| DELETE 🔒 | `/ascenseurs/:id` | — | Supprime | 204, 404 |
+| POST | `/ascenseurs` | `{ id_station, statut?, cause_panne?, ref_externe? }` | Crée | 201, 400, 409 |
+| PATCH | `/ascenseurs/:id` | `statut?`, `cause_panne?` (au moins un) | Met à jour et rafraîchit `date_maj` ; **efface la cause si le statut n'est plus `en_panne`** | 200, 400, 404 |
+| DELETE | `/ascenseurs/:id` | — | Supprime | 204, 404 |
 
 ### Recherche d'adresse
 
@@ -52,8 +46,8 @@ Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrô
 | Méthode | Route | Corps / paramètres | Rôle | Réponses |
 |---|---|---|---|---|
 | POST | `/auth/login` | `{ email, password }` | Renvoie `{ token, token_type, expires_in, operateur }`. **10 essais / 15 min** | 200, 400, 401, 429 |
-| GET 🔒 | `/auth/me` | — | Opérateur du jeton | 200, 401 |
-| GET 🔒 | `/stats/usage` | `jours` (1–365, défaut 30) | Recherches par station, langue, heure (0–23), jour | 200, 400, 401 |
+| GET | `/auth/me` | — | Opérateur du jeton | 200, 401 |
+| GET | `/stats/usage` | `jours` (1–365, défaut 30) | Recherches par station, langue, heure (0–23), jour | 200, 400, 401 |
 
 ### Exemple de réponse : `GET /ascenseurs/stats`
 
@@ -97,7 +91,7 @@ Autres commandes : `npm run db:reset` (⚠ supprime tout, développement uniquem
 2. Postman → **Import** → `docs/postman/Movecity.postman_collection.json` **et** `docs/postman/Movecity-local.postman_environment.json`.
 3. Choisir l'environnement **« Movecity – local »** (en haut à droite). Variables : `baseUrl` (`http://localhost:3000/api`), `email`, `password` (ceux de `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
 4. Exécuter dans l'ordre **1 · Santé → 2 · Public → 3 · Auth → 4 · Opérateur**. La requête `POST /auth/login` enregistre automatiquement le jeton dans `{{token}}`.
-5. Ou tout d'un coup : clic droit sur la collection → **Run collection**. Chaque requête contient ses tests (statut, forme de la réponse).
+5. **Run collection**. Chaque requête contient ses tests
 
 > Résultat de référence : 27 requêtes, 40 assertions. La requête `GET /geocode` exige internet (elle appelle la Base Adresse Nationale).
 >
@@ -106,4 +100,4 @@ Autres commandes : `npm run db:reset` (⚠ supprime tout, développement uniquem
 
 ## 5. Tests automatiques
 
-`npm run test:api` — 33 tests sur un vrai PostgreSQL (base `movecity_test`, **vidée à chaque exécution** ; le test refuse de tourner sur une base dont le nom ne finit pas par `_test`).
+`npm run test:api` 58 tests API et 12 tests front
