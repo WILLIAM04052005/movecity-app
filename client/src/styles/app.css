@@ -1,3 +1,6 @@
+/* ============================================================
+   Styles Movecity — toutes les couleurs viennent de theme.css
+   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; }
 
 html { font-size: var(--taille-base); }

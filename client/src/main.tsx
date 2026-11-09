@@ -6,9 +6,12 @@ import '@fontsource/kantumruy-pro/700.css';
 import './styles/theme.css';
 import './styles/app.css';
 import App from './App';
+import OperateurApp from './operateur/OperateurApp';
+import './styles/operateur.css';
+
+// /operateur → espace opérateur (connexion requise) ; tout le reste → borne citoyenne.
+const estOperateur = window.location.pathname.replace(/\/+$/, '').startsWith('/operateur');
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
+  <StrictMode>{estOperateur ? <OperateurApp /> : <App />}</StrictMode>
 );

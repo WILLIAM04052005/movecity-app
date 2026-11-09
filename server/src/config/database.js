@@ -1,5 +1,6 @@
+// ============================================================
 // Connexion PostgreSQL : un pool de connexions partagé par toute l'application.
-
+// ============================================================
 const { Pool } = require('pg');
 const config = require('./env');
 

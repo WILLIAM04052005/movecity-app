@@ -1,6 +1,7 @@
-# Movecity — API REST, diagramme de classes et tests Postman (v3)
+# Movecity — API REST et tests Postman 
 
-Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "message", "details": [...] }`. = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
+Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "message", "details": [...] }`.
+Cle = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
 
 ## Endpoints
 
@@ -72,7 +73,7 @@ CREATE DATABASE movecity_test OWNER movecity ENCODING 'UTF8';   -- uniquement po
 ```
 
 ```bash
-copy .env.example .env        # Windows (Linux/Mac : cp)  - puis renseigner DB_USER, DB_PASSWORD, DB_NAME, JWT_SECRET
+copy .env.example .env        # Windows (Linux/Mac : cp)  → puis renseigner DB_USER, DB_PASSWORD, DB_NAME, JWT_SECRET
 npm install
 npm run db:migrate            # crée les tables
 npm run db:seed               # données de Châtelet + opérateur (ADMIN_EMAIL / ADMIN_PASSWORD)
@@ -82,7 +83,7 @@ npm run dev                   # API :3000 + front :5173
 
 Variables de `.env` : `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (ou `DATABASE_URL`), `DB_SSL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `KIOSK_ID`, `RETENTION_JOURNAL_JOURS`, `PORT`.
 
-Autres commandes : `npm run db:reset` (supprime tout, développement uniquement) · `npm run operateur:creer -- email "motDePasse12+"`.
+Autres commandes : `npm run db:reset` (⚠ supprime tout, développement uniquement) · `npm run operateur:creer -- email "motDePasse12+"`.
 
 ## 4. Tester avec Postman
 
@@ -90,7 +91,7 @@ Autres commandes : `npm run db:reset` (supprime tout, développement uniquement)
 2. Postman → **Import** → `docs/postman/Movecity.postman_collection.json` **et** `docs/postman/Movecity-local.postman_environment.json`.
 3. Choisir l'environnement **« Movecity – local »** (en haut à droite). Variables : `baseUrl` (`http://localhost:3000/api`), `email`, `password` (ceux de `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
 4. Exécuter dans l'ordre **1 · Santé → 2 · Public → 3 · Auth → 4 · Opérateur**. La requête `POST /auth/login` enregistre automatiquement le jeton dans `{{token}}`.
-5. Ou tout d'un coup : clic droit sur la collection → **Run collection**. Chaque requête contient ses tests (statut, forme de la réponse).
+5. **Run collection**. Chaque requête contient ses tests
 
 > Résultat de référence : 27 requêtes, 40 assertions. La requête `GET /geocode` exige internet (elle appelle la Base Adresse Nationale).
 >
@@ -99,4 +100,4 @@ Autres commandes : `npm run db:reset` (supprime tout, développement uniquement)
 
 ## 5. Tests automatiques
 
-`npm run test:api` — 33 tests sur un vrai PostgreSQL (base `movecity_test`, **vidée à chaque exécution** ; le test refuse de tourner sur une base dont le nom ne finit pas par `_test`).
+`npm run test:api` 58 tests API et 12 tests front

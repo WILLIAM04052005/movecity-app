@@ -1,8 +1,7 @@
 import { useKiosk } from '../context/KioskContext';
 import { Modal } from './Modal';
 
-/** Avertissement avant retour à l'accueil. Toute interaction (y compris ce
- *  bouton) relance le minuteur d'inactivité : voir useInactivite. */
+/** Avertissement avant retour à l'accueil. */
 export function IdleModal({ secondes }: { secondes: number }) {
   const { t } = useKiosk();
   return (

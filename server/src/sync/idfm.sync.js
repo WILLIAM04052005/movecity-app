@@ -1,3 +1,10 @@
+// ============================================================
+// Synchronisation IDFM → PostgreSQL.
+//  - idempotente : on peut la lancer autant de fois qu'on veut ;
+//  - transactionnelle : tout est appliqué ou rien ;
+//  - prudente : une station non rapprochée n'est jamais touchée,
+//    un ascenseur qui disparaît du flux passe en « inconnu » (jamais « disponible »).
+// ============================================================
 const fs = require('fs');
 const path = require('path');
 const { query, transaction } = require('../config/database');
@@ -16,7 +23,13 @@ async function synchroniser(bruts, { dryRun = false, purgerDemo = false, alias =
   const { enregistrements, ignores } = mapping.normaliserTout(bruts);
   if (enregistrements.length === 0) {
     // Un flux vide est presque toujours une panne de la source : on ne touche à rien.
-    throw new Error('Le flux ne contient aucun ascenseur exploitable : synchronisation annulée, base inchangée.');
+    const colonnes = bruts.length ? Object.keys(bruts[0]).slice(0, 8).join(', ') : '';
+    throw new Error(
+      'Le flux ne contient aucun ascenseur exploitable : synchronisation annulée, base inchangée.' +
+        (colonnes
+          ? `\n  Colonnes trouvées : ${colonnes}\n  Colonnes attendues : liftId, liftStatus, ZdCId, ZdCName… (jeu « État des ascenseurs »). Ce fichier semble être un autre jeu de données.`
+          : '')
+    );
   }
 
   const { rows: stations } = await query('SELECT id_station, nom_station, ref_zdc FROM station');

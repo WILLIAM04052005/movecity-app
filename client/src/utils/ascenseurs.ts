@@ -2,7 +2,8 @@ import type { Ascenseur, EtatStation, Langue, Station, StatutAscenseur } from '.
 import { DONNEE_ANCIENNE_HEURES } from '../config';
 
 /**
- * SQLite renvoie « 2026-10-19 14:02:11 » (UTC, sans fuseau).
+ * SQLite renvoie « 2026-10-19 14:02:11 » (UTC, sans fuseau). On le lit
+ * explicitement comme de l'UTC pour éviter un décalage selon le navigateur.
  */
 export function parseDateMaj(valeur: string): Date | null {
   const iso = valeur.includes('T') ? valeur : valeur.replace(' ', 'T') + 'Z';
@@ -25,6 +26,12 @@ export function formatMaj(date: Date, langue: Langue): string {
   }).format(date);
 }
 
+/**
+ * Agrège les ascenseurs d'une station en un seul statut, de façon prudente :
+ * une panne l'emporte, puis l'inconnu ; « disponible » seulement si TOUS
+ * les ascenseurs connus le sont. Station sans ascenseur référencé = inconnu
+ * (on ne devine jamais).
+ */
 export function agregerStatut(statuts: readonly StatutAscenseur[]): StatutAscenseur {
   if (statuts.length === 0) return 'inconnu';
   if (statuts.includes('en_panne')) return 'en_panne';

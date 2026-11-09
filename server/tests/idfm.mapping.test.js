@@ -130,6 +130,14 @@ describe('Lecture CSV / JSON / API', () => {
     assert.equal(appels, 2);
   });
 
+  test('lireUrl : adresse d\'export CSV → un seul appel', async () => {
+    let appels = 0;
+    const fetchImpl = async () => { appels++; return new Response('liftId;ZdCId\n1;Z\n2;Z\n', { status: 200 }); };
+    const lignes = await lireUrl('https://exemple.test/api/datasets/x/exports/csv?delimiter=%3B', { fetchImpl });
+    assert.equal(lignes.length, 2);
+    assert.equal(appels, 1);
+  });
+
   test('lireUrl : refuse http, signale les erreurs HTTP', async () => {
     await assert.rejects(lireUrl('http://exemple.test/api'), /https/);
     await assert.rejects(lireUrl('https://exemple.test/api', { fetchImpl: async () => new Response('', { status: 503 }) }), /503/);

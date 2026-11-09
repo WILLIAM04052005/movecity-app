@@ -1,3 +1,4 @@
+// Usage : npm run operateur:creer -- prenom.nom@exemple.fr "MotDePasseLong12+"
 const bcrypt = require('bcryptjs');
 const { pool } = require('../src/config/database');
 const operateurs = require('../src/models/operateurs.model');

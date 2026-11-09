@@ -1,3 +1,6 @@
+// ============================================================
+// Schémas de validation (zod) : tout ce qui entre dans l'API est vérifié ici.
+// ============================================================
 const { z } = require('zod');
 
 const id = z.coerce.number().int().positive();

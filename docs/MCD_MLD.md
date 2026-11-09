@@ -35,6 +35,7 @@
 | STATION | id_station | `INTEGER` identité | PK |
 | | nom_station | `VARCHAR(120)` | NOT NULL |
 | | latitude / longitude | `DOUBLE PRECISION` | NOT NULL, bornes −90..90 / −180..180 |
+| | ref_zdc | `VARCHAR(30)` | UNIQUE, NULL (zone de correspondance IDFM) |
 | LIGNE | id_ligne | `INTEGER` identité | PK |
 | | code_ligne | `VARCHAR(20)` | UNIQUE, NOT NULL (« M1 », « RER A ») |
 | | type_ligne | `VARCHAR(20)` | `Métro` \| `RER` \| `Tram` \| `Train` |
@@ -64,7 +65,7 @@
 Clé primaire : **PK** · clé étrangère : `#`.
 
 ```
-STATION           (PK id_station, nom_station, latitude, longitude)
+STATION           (PK id_station, nom_station, latitude, longitude, ref_zdc)
 LIGNE             (PK id_ligne, code_ligne, type_ligne)
 STATION_LIGNE     (PK #id_station, PK #id_ligne)
 ASCENSEUR         (PK id_ascenseur, statut, cause_panne, date_maj, ref_externe, libelle, #id_station)

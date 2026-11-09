@@ -1,5 +1,7 @@
+// ============================================================
 // Configuration centralisée : lit le fichier .env à la racine du projet,
-
+// valide les valeurs et expose un objet `config` unique au reste du code.
+// ============================================================
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '..', '.env') });
 

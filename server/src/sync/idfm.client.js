@@ -1,4 +1,6 @@
+// ============================================================
 // Récupération du flux IDFM « État des ascenseurs » (réseau ou fichier local).
+// ============================================================
 const fs = require('fs');
 const path = require('path');
 const { parseCsv, extraireEnregistrements } = require('./idfm.mapping');
@@ -13,6 +15,18 @@ async function lireFichier(fichier) {
 
 async function lireUrl(url, { timeoutMs = 20_000, fetchImpl = fetch } = {}) {
   if (!/^https:\/\//i.test(url)) throw new Error('IDFM_URL doit commencer par https://');
+
+  // Adresse d'export complet (…/exports/csv ou …/exports/json) : un seul appel, sans pagination.
+  if (/\/exports\/(csv|json)\b/i.test(url) || /\.(csv|json)(\?|$)/i.test(url)) {
+    const reponse = await fetchImpl(url, {
+      headers: { 'user-agent': 'Movecity-borne/0.2 (projet pédagogique)' },
+      signal: AbortSignal.timeout(Math.max(timeoutMs, 60_000))
+    });
+    if (!reponse.ok) throw new Error(`Le flux IDFM répond ${reponse.status} (${new URL(url).origin}${new URL(url).pathname}).`);
+    const texte = await reponse.text();
+    return /csv/i.test(url) ? parseCsv(texte) : extraireEnregistrements(JSON.parse(texte));
+  }
+
   const toutes = [];
   for (let page = 0; page < PAGES_MAX; page++) {
     const adresse = new URL(url);

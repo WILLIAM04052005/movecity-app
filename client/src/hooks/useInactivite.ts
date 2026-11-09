@@ -3,6 +3,12 @@ import { AVERTISSEMENT_MS, INACTIVITE_MS } from '../config';
 
 const EVENEMENTS = ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const;
 
+/**
+ * Borne partagée : après INACTIVITE_MS sans interaction, on avertit puis, après
+ * AVERTISSEMENT_MS, on appelle `surExpiration` (retour à l'accueil, effacement de
+ * la session). Renvoie le nombre de secondes restantes pendant l'avertissement,
+ * ou null si tout va bien.
+ */
 export function useInactivite(actif: boolean, surExpiration: () => void): number | null {
   const [secondes, setSecondes] = useState<number | null>(null);
   const rappel = useRef(surExpiration);

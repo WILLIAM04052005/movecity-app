@@ -154,5 +154,5 @@ Points de conception à retenir :
 2. **PRIM** : compte et acceptation des CGU requis ; quotas à vérifier sur le compte de l'équipe ; option « fauteuil roulant » à confirmer. Prévoir un **cache** pour ne pas épuiser le quota quotidien.
 3. **Interface opérateur** (connexion + dashboard ≥ 3 visualisations) : l'API est prête (`/auth/login`, `/stats/usage`, `/ascenseurs/stats`), l'interface reste à construire.
 4. **Clavier tactile** à l'écran.
-5. **Hébergement, VPN, mode kiosque, intégration continue** :  décider avec l'équipe.
+5. **Hébergement, VPN, mode kiosque, intégration continue** : à décider avec l'équipe.
 6. **Fond de carte** : l'usage intensif des tuiles OpenStreetMap est encadré par leur politique ; à revoir avant un vrai déploiement.

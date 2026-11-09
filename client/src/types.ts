@@ -21,6 +21,8 @@ export interface Ascenseur {
   statut: StatutAscenseur;
   cause_panne: string | null;
   date_maj: string;
+  libelle?: string | null;
+  ref_externe?: string | null;
   id_station: number;
   nom_station: string;
   latitude: number;
@@ -54,6 +56,17 @@ export interface EtatStation {
   cause: string | null;
   /** Date de mise à jour la plus ancienne parmi les ascenseurs (approche prudente). */
   dateMaj: Date | null;
+}
+
+/** Réponse de GET /api/ascenseurs/stats */
+export interface StatsAscenseurs {
+  total: number;
+  disponibles: number;
+  en_panne: number;
+  inconnus: number;
+  taux_panne_pct: number;
+  derniere_maj: string | null;
+  pannes_par_ligne: { code_ligne: string; type_ligne: string; total: number; en_panne: number }[];
 }
 
 export interface Recherche {

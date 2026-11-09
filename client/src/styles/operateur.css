@@ -1,0 +1,88 @@
+/* Espace opérateur (/operateur) — réutilise les variables de theme.css */
+html[data-persona='operateur'] { font-size: 16px; --zone-tactile: 2.75rem; }
+html[data-persona='operateur'] body { user-select: text; overscroll-behavior: auto; background: var(--couleur-fond); }
+html[data-persona='operateur'] #root { min-height: 100vh; }
+
+.btn--petit { min-height: 2.5rem; height: auto; padding: 0.3rem 1rem; font-size: 0.9rem; }
+
+.op-page { max-width: 80rem; margin: 0 auto; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+.op-entete { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 0.75rem 1rem; }
+.op-entete h1 { flex: 1 1 14rem; font-size: 1.25rem; }
+.op-utilisateur { font-size: 0.9rem; }
+.op-logo { padding: 0.4rem 0.75rem; background: var(--couleur-primaire); border: 2px solid var(--couleur-texte); border-radius: 0.75rem; font-weight: 700; line-height: 1; }
+
+.op-onglets { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.op-onglet { font: inherit; font-weight: 700; min-height: 2.75rem; padding: 0 1.25rem; color: var(--couleur-texte); background: var(--couleur-fond); border: 2px solid var(--couleur-texte); border-radius: 999px; cursor: pointer; }
+.op-onglet[aria-selected='true'] { background: var(--couleur-accent); }
+
+.op-colonne { display: flex; flex-direction: column; gap: 1rem; }
+.op-barre-outils { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.op-barre-outils [role='group'] { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.op-note { font-size: 0.85rem; color: #555; }
+.op-message { margin: 0; padding: 0.6rem 0.9rem; border: 2px solid var(--couleur-texte); border-radius: 0.75rem; font-weight: 700; font-size: 0.95rem; }
+.op-message--ok { background: var(--couleur-accent); }
+.op-message--info { background: var(--couleur-secondaire); }
+.op-message--erreur { background: var(--couleur-primaire); }
+
+/* tableaux */
+.op-tableau-defile { overflow-x: auto; border: 2px solid var(--couleur-texte); border-radius: var(--rayon); }
+.op-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.op-table th, .op-table td { text-align: left; vertical-align: middle; padding: 0.6rem 0.8rem; border-bottom: 1px solid #ccc; }
+.op-table th { font-size: 0.8rem; color: #555; background: #f4f4f4; }
+.op-table tr:last-child td { border-bottom: 0; }
+.op-actions { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+
+/* formulaires */
+.op-formulaire { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.9rem; margin-top: 0.8rem; }
+.op-formulaire h2 { flex: 1 0 100%; font-size: 1.1rem; }
+.op-champ { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 700; font-size: 0.9rem; border: 0; padding: 0; margin: 0; }
+.op-champ input, .op-champ select { font: inherit; font-weight: 400; min-height: 2.75rem; padding: 0 0.8rem; border: 2px solid var(--couleur-texte); border-radius: 0.75rem; background: #fff; color: var(--couleur-texte); }
+.op-champ--compact select { min-height: 2.5rem; }
+.op-lignes { flex: 1 0 100%; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.op-lignes legend { margin-bottom: 0.4rem; }
+.op-case { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+.op-case input { width: 1.25rem; height: 1.25rem; min-height: 0; }
+.op-aide { font-size: 0.8rem; color: #555; }
+details.op-bloc summary { font-weight: 700; cursor: pointer; min-height: 2.5rem; display: flex; align-items: center; }
+
+/* connexion */
+.op-connexion { min-height: 100vh; display: grid; place-items: center; padding: 1rem; position: relative; overflow: hidden; }
+.op-connexion::before, .op-connexion::after { content: ''; position: absolute; border-radius: 50%; z-index: 0; }
+.op-connexion::before { width: 26rem; height: 26rem; left: -12rem; top: -12rem; background: var(--couleur-secondaire); }
+.op-connexion::after { width: 30rem; height: 30rem; right: -14rem; bottom: -15rem; background: var(--couleur-primaire); }
+.op-carte-connexion { position: relative; z-index: 1; width: min(30rem, 100%); padding: 2rem; display: flex; flex-direction: column; gap: 1rem; border-width: 3px; }
+.op-carte-connexion h1 { font-size: 1.8rem; }
+
+/* tableau de bord */
+.op-tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1rem; }
+.op-tuile { padding: 0.8rem 1.1rem; border: 2px solid var(--couleur-texte); border-radius: var(--rayon); display: flex; flex-direction: column; }
+.op-tuile--secondaire { background: var(--couleur-secondaire); }
+.op-tuile--primaire { background: var(--couleur-primaire); }
+.op-tuile--accent { background: var(--couleur-accent); }
+.op-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1rem; }
+.op-bloc { padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: 0.7rem; }
+.op-bloc h2 { font-size: 1.1rem; }
+.op-bloc--large { grid-column: 1 / -1; }
+.op-figure { margin: 0; width: 100%; }
+.op-figure svg { width: 100%; height: auto; }
+.op-axe { stroke: var(--couleur-texte); stroke-width: 2; }
+.op-barre { fill: var(--couleur-texte); }
+.op-barre--pic { fill: var(--couleur-primaire); stroke: var(--couleur-texte); stroke-width: 2; }
+.op-etiquette { font-size: 11px; fill: var(--couleur-texte); text-anchor: middle; }
+.op-etiquette--gras { font-weight: 700; }
+.op-barres { display: flex; flex-direction: column; gap: 0.6rem; }
+.op-barre-ligne { display: grid; grid-template-columns: minmax(5rem, 9rem) 1fr 3rem; align-items: center; gap: 0.6rem; }
+.op-barre-piste { display: block; height: 1.2rem; background: #e3e3e3; border: 2px solid var(--couleur-texte); border-radius: 6px; overflow: hidden; }
+.op-barre-remplie { display: block; height: 100%; background: var(--couleur-texte); }
+.op-barre-valeur { font-weight: 700; text-align: right; }
+
+@media (max-width: 640px) {
+  .op-page { padding: 0.5rem; }
+  .op-barre-ligne { grid-template-columns: 1fr 3rem; }
+  .op-barre-piste { grid-column: 1 / -1; grid-row: 2; }
+}
+
+.op-tuile span { font-size: 0.85rem; font-weight: 700; }
+.op-tuile strong { font-size: 2.2rem; line-height: 1.15; }
+.op-tuile small { font-size: 0.8rem; }
+.op-carte-connexion .op-logo { align-self: flex-start; }

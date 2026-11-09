@@ -26,27 +26,27 @@ classDiagram
     +lister() GET /stations
     +proches() GET /stations/nearest
     +detail() GET /stations/:id
-    +creer() POST /stations 
-    +modifier() PUT /stations/:id 
-    +supprimer() DELETE /stations/:id
+    +creer() POST /stations 🔒
+    +modifier() PUT /stations/:id 🔒
+    +supprimer() DELETE /stations/:id 🔒
   }
   class AscenseursController {
     +lister() GET /ascenseurs
     +statistiques() GET /ascenseurs/stats
     +detail() GET /ascenseurs/:id
-    +creer() POST /ascenseurs
-    +modifier() PATCH /ascenseurs/:id
-    +supprimer() DELETE /ascenseurs/:id 
+    +creer() POST /ascenseurs 🔒
+    +modifier() PATCH /ascenseurs/:id 🔒
+    +supprimer() DELETE /ascenseurs/:id 🔒
   }
   class GeocodeController {
     +rechercher() GET /geocode
   }
   class AuthController {
     +login() POST /auth/login
-    +moi() GET /auth/me 
+    +moi() GET /auth/me 🔒
   }
   class StatsController {
-    +usage() GET /stats/usage 
+    +usage() GET /stats/usage 🔒
   }
 
   class KiosqueModel {

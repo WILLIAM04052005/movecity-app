@@ -9,6 +9,7 @@ function routeIntrouvable(req, res, next) {
 const ERREURS_PG = {
   '23505': [409, 'Cette valeur existe déjà.'],
   '23503': [409, 'Opération impossible : référence invalide ou élément encore utilisé.'],
+  '23001': [409, 'Opération impossible : référence invalide ou élément encore utilisé.'],
   '23514': [400, 'Valeur refusée par une règle de la base de données.'],
   '23502': [400, 'Un champ obligatoire est manquant.'],
   '22P02': [400, 'Format de donnée invalide.'],

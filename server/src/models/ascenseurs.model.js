@@ -46,6 +46,12 @@ async function supprimer(id) {
   return rowCount > 0;
 }
 
+/**
+ * Chiffres du tableau de bord « accessibilité » (vue affichée sur la borne) :
+ *  - taux d'ascenseurs en panne ;
+ *  - pannes par ligne (une panne compte pour chaque ligne qui dessert la station) ;
+ *  - stations les moins accessibles.
+ */
 async function statistiques(limiteStations) {
   const [global, parLigne, moinsAccessibles] = await Promise.all([
     query(`SELECT count(*)::int AS total,

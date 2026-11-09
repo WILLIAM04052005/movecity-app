@@ -5,7 +5,7 @@ const operateurs = require('../models/operateurs.model');
 const { HttpError, asyncHandler } = require('../utils/http');
 
 // Hash factice : on compare toujours un mot de passe, même si l'e-mail n'existe pas,
-
+// pour que le temps de réponse ne révèle pas quels comptes existent.
 const HASH_FACTICE = bcrypt.hashSync('mot-de-passe-factice', 12);
 
 /** POST /api/auth/login → { token, operateur } */

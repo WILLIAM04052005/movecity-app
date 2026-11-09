@@ -1,8 +1,11 @@
+// ============================================================
+// Usage :
 //   npm run sync:ascenseurs                      synchronise depuis IDFM_URL
 //   npm run sync:ascenseurs -- --dry-run         simule : n'écrit rien, montre le rapprochement
 //   npm run sync:ascenseurs -- --file ./ascenseurs.csv   utilise un fichier téléchargé à la main
+//   npm run sync:ascenseurs -- --url https://…/exports/csv   autre adresse (export CSV complet accepté)
 //   npm run sync:ascenseurs -- --purge-demo      supprime TOUS les ascenseurs de démonstration (DEMO-n)
-
+// ============================================================
 const config = require('../src/config/env');
 const { pool } = require('../src/config/database');
 const { recuperer } = require('../src/sync/idfm.client');
@@ -14,9 +17,10 @@ const valeur = nom => { const i = args.indexOf(nom); return i >= 0 ? args[i + 1]
 
 (async () => {
   const fichier = valeur('--file') || config.idfm.fichier;
-  console.log(fichier ? `Source : fichier ${fichier}` : `Source : ${config.idfm.url}`);
+  const url = valeur('--url') || config.idfm.url;
+  console.log(fichier ? `Source : fichier ${fichier}` : `Source : ${url}`);
 
-  const bruts = await recuperer({ url: config.idfm.url, fichier });
+  const bruts = await recuperer({ url, fichier });
   const r = await synchroniser(bruts, { dryRun: drapeau('--dry-run'), purgerDemo: drapeau('--purge-demo') });
 
   console.log(`\n${r.dryRun ? '[SIMULATION] ' : ''}${r.recus} enregistrement(s) reçu(s), ${r.ascenseurs_valides} valide(s) dans ${r.zones} zone(s) (${r.ignores} ignoré(s)).`);

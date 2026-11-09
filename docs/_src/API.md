@@ -1,9 +1,15 @@
 # Movecity — API REST, diagramme de classes et tests Postman (v3)
 
-Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "message", "details": [...] }`. = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
+Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "message", "details": [...] }`.
+🔒 = jeton opérateur requis : en-tête `Authorization: Bearer <token>`.
 
+## 1. Diagramme de classes avec les endpoints
 
-## Endpoints
+{{mmd:classes-api}}
+
+Image : `img/classes-api.png`. Lecture : `Routes` → (middleware) → **Contrôleurs** (un endpoint = une méthode) → **Modèles** (SQL) → PostgreSQL.
+
+## 2. Endpoints
 
 ### Santé et borne (publics)
 
@@ -20,9 +26,9 @@ Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "me
 | GET | `/stations` | — | Stations + codes de lignes + `statut_ascenseur` agrégé | 200 |
 | GET | `/stations/nearest` | `lat`, `lon` (requis), `limit` (1–20, défaut 3) | Stations les plus proches, avec `distance_km` | 200, 400 |
 | GET | `/stations/:id` | — | Détail d'une station | 200, 400, 404 |
-| POST | `/stations` | `{ nom_station, latitude, longitude, lignes?: ["M1"] }` | Crée (transaction) | 201, 400, 401 |
-| PUT | `/stations/:id` | au moins un champ ; `lignes` **remplace** les lignes | Modifie | 200, 400, 401, 404 |
-| DELETE | `/stations/:id` | — | Supprime | 204, 401, 404, **409** si elle héberge une borne |
+| POST 🔒 | `/stations` | `{ nom_station, latitude, longitude, lignes?: ["M1"] }` | Crée (transaction) | 201, 400, 401 |
+| PUT 🔒 | `/stations/:id` | au moins un champ ; `lignes` **remplace** les lignes | Modifie | 200, 400, 401, 404 |
+| DELETE 🔒 | `/stations/:id` | — | Supprime | 204, 401, 404, **409** si elle héberge une borne |
 
 ### Ascenseurs
 
@@ -31,9 +37,9 @@ Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "me
 | GET | `/ascenseurs` | `statut?`, `id_station?` | Liste filtrable | 200, 400 |
 | GET | `/ascenseurs/stats` | `limite?` (1–20, défaut 5) | **Vue accessibilité de la borne** : taux de pannes, pannes par ligne, stations les moins accessibles | 200 |
 | GET | `/ascenseurs/:id` | — | Détail | 200, 404 |
-| POST | `/ascenseurs` | `{ id_station, statut?, cause_panne?, ref_externe? }` | Crée | 201, 400, 409 |
-| PATCH | `/ascenseurs/:id` | `statut?`, `cause_panne?` (au moins un) | Met à jour et rafraîchit `date_maj` ; **efface la cause si le statut n'est plus `en_panne`** | 200, 400, 404 |
-| DELETE | `/ascenseurs/:id` | — | Supprime | 204, 404 |
+| POST 🔒 | `/ascenseurs` | `{ id_station, statut?, cause_panne?, ref_externe? }` | Crée | 201, 400, 409 |
+| PATCH 🔒 | `/ascenseurs/:id` | `statut?`, `cause_panne?` (au moins un) | Met à jour et rafraîchit `date_maj` ; **efface la cause si le statut n'est plus `en_panne`** | 200, 400, 404 |
+| DELETE 🔒 | `/ascenseurs/:id` | — | Supprime | 204, 404 |
 
 ### Recherche d'adresse
 
@@ -46,8 +52,8 @@ Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "me
 | Méthode | Route | Corps / paramètres | Rôle | Réponses |
 |---|---|---|---|---|
 | POST | `/auth/login` | `{ email, password }` | Renvoie `{ token, token_type, expires_in, operateur }`. **10 essais / 15 min** | 200, 400, 401, 429 |
-| GET | `/auth/me` | — | Opérateur du jeton | 200, 401 |
-| GET | `/stats/usage` | `jours` (1–365, défaut 30) | Recherches par station, langue, heure (0–23), jour | 200, 400, 401 |
+| GET 🔒 | `/auth/me` | — | Opérateur du jeton | 200, 401 |
+| GET 🔒 | `/stats/usage` | `jours` (1–365, défaut 30) | Recherches par station, langue, heure (0–23), jour | 200, 400, 401 |
 
 ### Exemple de réponse : `GET /ascenseurs/stats`
 
@@ -66,6 +72,7 @@ Base : `http://localhost:3000/api` · Format : JSON · Erreurs : `{ "error": "me
 ## 3. Mise en route PostgreSQL
 
 ```sql
+-- à exécuter avec un compte administrateur PostgreSQL (psql, pgAdmin…)
 CREATE USER movecity WITH PASSWORD 'movecity_dev';
 CREATE DATABASE movecity      OWNER movecity ENCODING 'UTF8';
 CREATE DATABASE movecity_test OWNER movecity ENCODING 'UTF8';   -- uniquement pour npm run test:api
@@ -76,7 +83,7 @@ copy .env.example .env        # Windows (Linux/Mac : cp)  → puis renseigner DB
 npm install
 npm run db:migrate            # crée les tables
 npm run db:seed               # données de Châtelet + opérateur (ADMIN_EMAIL / ADMIN_PASSWORD)
-npm run db:demo              
+npm run db:demo               # (optionnel) 600 recherches FICTIVES pour tester /stats/usage
 npm run dev                   # API :3000 + front :5173
 ```
 

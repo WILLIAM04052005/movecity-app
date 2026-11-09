@@ -54,7 +54,7 @@ flowchart LR
   OSM["Tuiles OpenStreetMap"]
   IDFM["IDFM Open Data<br/>état des ascenseurs<br/>publié 3 fois par jour"]
   PRIM["PRIM / Navitia<br/>calcul d'itinéraires"]
-  
+
   C --> FE
   FE -->|"HTTPS · /api"| MW --> RT --> CT --> MD --> DB
   FE -->|tuiles| OSM
