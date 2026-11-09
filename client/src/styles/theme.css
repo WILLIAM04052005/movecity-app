@@ -1,8 +1,4 @@
-/* ============================================================
-   Charte graphique Movecity — MODIFIER LES COULEURS ICI UNIQUEMENT
-   (valeurs relevées sur la maquette d'identité visuelle de l'équipe ;
-   remplacer le vert d'accent par le code exact de la charte)
-   ============================================================ */
+/* Charte graphique Movecity — MODIFIER LES COULEURS ICI UNIQUEMENT */
 :root {
   --couleur-accent: #90e57e;       /* vert d'accent (valeur approchée) */
   --couleur-secondaire: #c2bfff;
