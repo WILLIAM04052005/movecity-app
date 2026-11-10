@@ -51,10 +51,6 @@ copy .env.example .env      # Windows   (Linux/macOS : cp)
 
 Renseigner `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, puis un `JWT_SECRET` long et aléatoire :
 
-```bash
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-```
-
 ### 3. Installer, migrer, lancer
 
 ```bash
@@ -103,22 +99,22 @@ server/
 | GET | `/ascenseurs` (`?statut&id_station`) · `/ascenseurs/stats` · `/ascenseurs/:id` | public |
 | GET | `/geocode?q&lang` | public (30/min) |
 | POST | `/auth/login` | public (10/15 min) |
-| GET | `/auth/me` | 🔒 opérateur |
-| POST · PUT · DELETE | `/stations` · `/stations/:id` | 🔒 opérateur |
-| POST · PATCH · DELETE | `/ascenseurs` · `/ascenseurs/:id` | 🔒 opérateur |
-| GET | `/stats/usage?jours` | 🔒 opérateur |
+| GET | `/auth/me` | opérateur |
+| POST · PUT · DELETE | `/stations` · `/stations/:id` | opérateur |
+| POST · PATCH · DELETE | `/ascenseurs` · `/ascenseurs/:id` | opérateur |
+| GET | `/stats/usage?jours` | opérateur |
 
 ## Tester avec Postman
 
 1. Importer `docs/postman/Movecity.postman_collection.json` et `docs/postman/Movecity-local.postman_environment.json`.
 2. Choisir l'environnement **Movecity local** (`baseUrl = http://localhost:3000/api`).
 3. Lancer **Auth → Login** : le jeton est enregistré automatiquement dans la variable `token`.
-4. Les requêtes 🔒 l'utilisent seules. La collection contient des tests (Runner ▸ Run collection).
+4. Les requêtes l'utilisent seules. La collection contient des tests (Runner ▸ Run collection).
 
 ## Tests automatiques
 
 ```bash
-npm run test:api   # 33 tests d'intégration, sur la base <DB_NAME>_test
+npm run test:api   # tests d'intégration, sur la base <DB_NAME>_test
 npm test           # tests front (Vitest)
 npm run typecheck
 ```
@@ -142,7 +138,7 @@ Le script lit le jeu « État des ascenseurs » d'Île-de-France Mobilités (pub
 
 Règles de prudence : un ascenseur absent du flux passe en « inconnu » ; un flux vide annule tout ; la date affichée est celle du relevé IDFM.
 
-## Points à valider avec l'équipe
+## Points valider avec l'équipe
 
 - Licence et fréquence des données IDFM (ascenseurs : ~3 mises à jour par jour) ; quota et conditions PRIM.
 - Durée de conservation du journal (90 jours par défaut) → validation Cyber.

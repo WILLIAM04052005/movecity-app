@@ -1,8 +1,6 @@
-// ============================================================
 // Tests d'intégration de l'API : vrai PostgreSQL (base *_test), vrai Express.
 // Lancer :  npm run test:api      (la base de test est VIDÉE à chaque exécution)
-// Pré-requis : CREATE DATABASE movecity_test OWNER movecity;
-// ============================================================
+
 process.env.NODE_ENV = 'test';
 process.env.LIMITE_GEOCODE_PAR_MINUTE = '6';
 
@@ -19,7 +17,7 @@ const { synchroniser } = require('../src/sync/idfm.sync');
 const { lireFichier } = require('../src/sync/idfm.client');
 const path = require('node:path');
 
-// Garde-fou : ces tests effacent la base. On refuse de tourner sur autre chose qu'une base *_test.
+//ces tests effacent la base. On refuse de tourner sur autre chose qu'une base *_test.
 if (!config.db.url && !config.db.database.endsWith('_test')) {
   throw new Error(`Refus : la base "${config.db.database}" n'est pas une base de test.`);
 }
