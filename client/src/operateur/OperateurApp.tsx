@@ -52,7 +52,7 @@ export default function OperateurApp() {
   return (
     <div className="op-page">
       <header className="panneau op-entete">
-        <div className="op-logo">Move<br />City</div>
+        <div className="op-logo">Nexway</div>
         <h1>Espace opérateur — Châtelet - Les Halles</h1>
         <span className="op-utilisateur">{operateur.email}</span>
         <button type="button" className="btn btn--petit" onClick={() => deconnecter()}>Déconnexion</button>

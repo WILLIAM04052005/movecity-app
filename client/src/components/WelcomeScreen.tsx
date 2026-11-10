@@ -22,9 +22,7 @@ export function WelcomeScreen() {
     <main className="accueil">
       <header className="accueil-entete">
         <div className="logo">
-          Move
-          <br />
-          City
+          Nexway
         </div>
         <LangueSwitch />
       </header>

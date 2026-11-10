@@ -33,7 +33,7 @@ export function Connexion({ surConnexion, info }: { surConnexion: (jeton: string
   return (
     <main className="op-connexion">
       <form className="panneau op-carte-connexion" onSubmit={soumettre} noValidate>
-        <div className="op-logo">Move<br />City</div>
+        <div className="op-logo">Nexway</div>
         <h1>Espace opérateur</h1>
         <p className="op-note">Accès réservé aux opérateurs, via le VPN.</p>
 
