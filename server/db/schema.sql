@@ -1,15 +1,11 @@
--- ============================================================
--- Movecity — Schéma PostgreSQL v3 (borne / kiosque)
---
--- Principes (manifeste + dossier de cadrage) :
+-- Movecity — Schéma PostgreSQL (borne / kiosque)
+-- Principes (manifeste + dossier de cadrage de l'equipe) :
 --  * Citoyen ANONYME : aucune table utilisateur public, aucun favori,
 --    aucun historique de trajet.
 --  * Minimisation : l'adresse tapée n'est JAMAIS stockée.
 --  * Seul l'OPÉRATEUR a un compte (accès administration via VPN).
---  * Script idempotent : peut être rejoué sans erreur (IF NOT EXISTS).
--- ============================================================
 
--- --- STATION ---
+-- STATION
 CREATE TABLE IF NOT EXISTS station (
   id_station   INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   nom_station  VARCHAR(120)     NOT NULL,
@@ -19,14 +15,14 @@ CREATE TABLE IF NOT EXISTS station (
   ref_zdc      VARCHAR(30) UNIQUE
 );
 
--- --- LIGNE ---
+-- LIGNE 
 CREATE TABLE IF NOT EXISTS ligne (
   id_ligne    INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   code_ligne  VARCHAR(20) NOT NULL UNIQUE,                 -- "M1", "RER A"
   type_ligne  VARCHAR(20) NOT NULL CHECK (type_ligne IN ('Métro', 'RER', 'Tram', 'Train'))
 );
 
--- --- DESSERT : STATION (0,n) — (0,n) LIGNE ---
+-- DESSERT 
 CREATE TABLE IF NOT EXISTS station_ligne (
   id_station  INTEGER NOT NULL REFERENCES station(id_station) ON DELETE CASCADE,
   id_ligne    INTEGER NOT NULL REFERENCES ligne(id_ligne)     ON DELETE CASCADE,
@@ -35,8 +31,6 @@ CREATE TABLE IF NOT EXISTS station_ligne (
 
 -- --- ASCENSEUR : POSSÈDE — ASCENSEUR (1,1) — (0,n) STATION ---
 -- La clé étrangère est du côté (1,1). date_maj = fraîcheur de la donnée
--- (flux IDFM mis à jour ~3 fois par jour). ref_externe = identifiant dans
--- le flux IDFM, clé de synchronisation (upsert) prévue plus tard.
 CREATE TABLE IF NOT EXISTS ascenseur (
   id_ascenseur  INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   statut        VARCHAR(12)  NOT NULL DEFAULT 'inconnu'
@@ -70,7 +64,7 @@ CREATE TABLE IF NOT EXISTS kiosque_ligne (
 -- --- JOURNAL_RECHERCHE : statistiques d'usage SANS donnée personnelle ---
 -- Ni adresse, ni coordonnées : seulement la station la plus proche trouvée,
 -- la langue de l'interface et l'horodatage. Purgé automatiquement
--- (RETENTION_JOURNAL_JOURS, à valider avec la filière Cyber).
+-- (RETENTION_JOURNAL_JOURS, valider avec la filière Cyber).
 CREATE TABLE IF NOT EXISTS journal_recherche (
   id_recherche       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   id_kiosque         INTEGER     NOT NULL REFERENCES kiosque(id_kiosque) ON DELETE CASCADE,
@@ -102,9 +96,6 @@ CREATE INDEX IF NOT EXISTS idx_journal_date      ON journal_recherche(date_reche
 CREATE INDEX IF NOT EXISTS idx_journal_station   ON journal_recherche(id_station_proche);
 
 -- --- Vue : état agrégé des ascenseurs par station ---
--- Règle prudente (identique à celle du front) : une panne l'emporte, puis
--- l'inconnu ; « disponible » seulement si TOUS les ascenseurs le sont.
--- Station sans ascenseur référencé = « inconnu » (on ne devine jamais).
 CREATE OR REPLACE VIEW v_etat_station AS
 SELECT
   s.id_station,

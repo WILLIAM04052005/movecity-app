@@ -1,8 +1,6 @@
--- ============================================================
 -- DÉMO UNIQUEMENT : génère ~600 recherches ANONYMES fictives sur 30 jours
 -- pour alimenter le dashboard opérateur pendant le développement.
 -- (Aucune donnée réelle : station au hasard, langue au hasard, heure pondérée.)
--- ============================================================
 DELETE FROM journal_recherche;
 
 INSERT INTO journal_recherche (id_kiosque, id_station_proche, langue, date_recherche)
