@@ -1,6 +1,5 @@
-// ============================================================
 // Récupération du flux IDFM « État des ascenseurs » (réseau ou fichier local).
-// ============================================================
+
 const fs = require('fs');
 const path = require('path');
 const { parseCsv, extraireEnregistrements } = require('./idfm.mapping');

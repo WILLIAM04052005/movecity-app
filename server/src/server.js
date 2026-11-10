@@ -1,6 +1,5 @@
-// ============================================================
 // Point d'entrée : vérifie PostgreSQL, démarre l'écoute, gère l'arrêt propre.
-// ============================================================
+
 const config = require('./config/env');
 const { pool } = require('./config/database');
 const app = require('./app');

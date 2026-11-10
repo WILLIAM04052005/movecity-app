@@ -1,7 +1,6 @@
-// ============================================================
 // Table des routes de l'API (préfixe /api). Chaque ligne = un endpoint :
 //   route → [middleware : limite / validation / authentification] → contrôleur
-// ============================================================
+
 const express = require('express');
 const config = require('../config/env');
 const schemas = require('../schemas');

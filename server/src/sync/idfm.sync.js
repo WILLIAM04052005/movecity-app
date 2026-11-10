@@ -1,10 +1,9 @@
-// ============================================================
 // Synchronisation IDFM → PostgreSQL.
-//  - idempotente : on peut la lancer autant de fois qu'on veut ;
-//  - transactionnelle : tout est appliqué ou rien ;
-//  - prudente : une station non rapprochée n'est jamais touchée,
-//    un ascenseur qui disparaît du flux passe en « inconnu » (jamais « disponible »).
-// ============================================================
+// idempotente : on peut la lancer autant de fois qu'on veut ;
+// transactionnelle : tout est appliqué ou rien ;
+// prudente : une station non rapprochée n'est jamais touchée,
+// un ascenseur qui disparaît du flux passe en « inconnu » (jamais « disponible »)
+
 const fs = require('fs');
 const path = require('path');
 const { query, transaction } = require('../config/database');

@@ -1,10 +1,8 @@
-// ============================================================
 // Synchronisation IDFM — fonctions PURES (aucun accès réseau ni base).
 // Source : jeu « État des ascenseurs » d'Île-de-France Mobilités.
 // Champs documentés par IDFM : liftId, liftStateUpdate, liftPrivateId,
 // liftSituation, liftDirection, liftStatus, liftReason, ZdCId, ZdCName,
 // ZdCXEpsg2154, ZdCYEpsg2154.
-// ============================================================
 
 /** Minuscules, sans accents ni ponctuation : "Châtelet - Les Halles" → "chatelet les halles". */
 function normaliser(texte) {

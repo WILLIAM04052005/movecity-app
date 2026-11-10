@@ -1,6 +1,5 @@
-// ============================================================
 // Application Express (sans écoute réseau : facilite les tests).
-// ============================================================
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -17,11 +16,11 @@ if (config.trustProxy) app.set('trust proxy', 1); // derrière un hébergeur : v
 app.use(entetesSecurite);
 app.use(express.json({ limit: '10kb' }));
 
-// --- API ---
+// API 
 app.use('/api', routes);
 app.use('/api', routeIntrouvable);
 
-// --- Front React (build de production : client/dist) ---
+// Front React (build de production : client/dist)
 // En développement, Vite (port 5173) sert le front et redirige /api vers ce serveur.
 const dossierFront = path.join(__dirname, '..', '..', 'client', 'dist');
 if (fs.existsSync(dossierFront)) {
