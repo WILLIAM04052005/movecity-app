@@ -35,7 +35,7 @@ async function seed() {
 async function reset() {
   if (config.estProduction) throw new Error('db:reset est interdit en production.');
   await pool.query(`DROP VIEW IF EXISTS v_etat_station;
-    DROP TABLE IF EXISTS journal_recherche, kiosque_ligne, kiosque, ascenseur, station_ligne, ligne, station, operateur CASCADE;`);
+    DROP TABLE IF EXISTS journal_audit, journal_recherche, kiosque_ligne, kiosque, ascenseur, station_ligne, ligne, station, operateur CASCADE;`);
   console.log('✔ Tables supprimées.');
   await migrate();
   await seed();
@@ -64,3 +64,4 @@ if (require.main === module) {
     })
     .finally(() => pool.end());
 }
+

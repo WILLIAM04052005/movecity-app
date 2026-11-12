@@ -60,6 +60,7 @@ const config = {
     intervalleMinutes: Math.max(30, entier('IDFM_SYNC_INTERVALLE_MIN', 180))
   },
   banUrl: process.env.BAN_URL || 'https://data.geopf.fr/geocodage/search/',
+  banSecoursUrl: process.env.BAN_SECOURS_URL || 'https://nominatim.openstreetmap.org/search',
   prim: {
     url: env.PRIM_URL || 'https://prim.iledefrance-mobilites.fr/marketplace/v2/navitia/journeys',
     cle: env.PRIM_API_KEY || ''
