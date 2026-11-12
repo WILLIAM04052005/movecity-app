@@ -1,4 +1,5 @@
 const stations = require('../models/stations.model');
+const audit = require('../models/audit.model');
 const { HttpError, asyncHandler } = require('../utils/http');
 
 /** GET /api/stations */
@@ -21,18 +22,22 @@ exports.detail = asyncHandler(async (req, res) => {
 
 /** POST /api/stations (opérateur) */
 exports.creer = asyncHandler(async (req, res) => {
-  res.status(201).json(await stations.creer(req.body));
+  const s = await stations.creer(req.body);
+  await audit.ecrire({ operateur: req.operateur, action: 'station_creee', cible: 'station', idCible: s.id_station, detail: { nom: s.nom_station } });
+  res.status(201).json(s);
 });
 
 /** PUT /api/stations/:id (opérateur) — modification partielle */
 exports.modifier = asyncHandler(async (req, res) => {
   const station = await stations.modifier(req.params.id, req.body);
   if (!station) throw new HttpError(404, 'Station introuvable.');
+  await audit.ecrire({ operateur: req.operateur, action: 'station_modifiee', cible: 'station', idCible: station.id_station, detail: { nom: station.nom_station } });
   res.json(station);
 });
 
 /** DELETE /api/stations/:id (opérateur) */
 exports.supprimer = asyncHandler(async (req, res) => {
   if (!(await stations.supprimer(req.params.id))) throw new HttpError(404, 'Station introuvable.');
+  await audit.ecrire({ operateur: req.operateur, action: 'station_supprimee', cible: 'station', idCible: Number(req.params.id) });
   res.status(204).end();
 });

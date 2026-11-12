@@ -1,4 +1,5 @@
 const ascenseurs = require('../models/ascenseurs.model');
+const audit = require('../models/audit.model');
 const { HttpError, asyncHandler } = require('../utils/http');
 
 /** GET /api/ascenseurs?statut=&id_station= */
@@ -22,7 +23,9 @@ exports.detail = asyncHandler(async (req, res) => {
 exports.creer = asyncHandler(async (req, res) => {
   const donnees = { ...req.body };
   if (donnees.statut !== 'en_panne') donnees.cause_panne = null; // règle de gestion
-  res.status(201).json(await ascenseurs.creer(donnees));
+  const a = await ascenseurs.creer(donnees);
+  await audit.ecrire({ operateur: req.operateur, action: 'ascenseur_cree', cible: 'ascenseur', idCible: a.id_ascenseur, detail: { statut: a.statut } });
+  res.status(201).json(a);
 });
 
 /** PATCH /api/ascenseurs/:id (opérateur) : nouveau statut / cause de panne */
@@ -33,11 +36,16 @@ exports.modifier = asyncHandler(async (req, res) => {
 
   const a = await ascenseurs.modifier(req.params.id, champs);
   if (!a) throw new HttpError(404, 'Ascenseur introuvable.');
+  await audit.ecrire({
+    operateur: req.operateur, action: 'ascenseur_modifie', cible: 'ascenseur', idCible: a.id_ascenseur,
+    detail: { statut: a.statut, cause_panne: a.cause_panne }
+  });
   res.json(a);
 });
 
 /** DELETE /api/ascenseurs/:id (opérateur) */
 exports.supprimer = asyncHandler(async (req, res) => {
   if (!(await ascenseurs.supprimer(req.params.id))) throw new HttpError(404, 'Ascenseur introuvable.');
+  await audit.ecrire({ operateur: req.operateur, action: 'ascenseur_supprime', cible: 'ascenseur', idCible: Number(req.params.id) });
   res.status(204).end();
 });
