@@ -22,4 +22,22 @@ async function creer(email, passwordHash) {
   return rows[0];
 }
 
-module.exports = { trouverParEmail, trouverParId, creer };
+/** Compte un échec ; au N-ième échec consécutif, verrouille le compte puis remet le compteur à 0. */
+async function enregistrerEchec(id, maxEchecs, minutes) {
+  const { rows } = await query(
+    `UPDATE operateur SET
+       echecs_connexion  = CASE WHEN echecs_connexion + 1 >= $2 THEN 0 ELSE echecs_connexion + 1 END,
+       verrouille_jusqua = CASE WHEN echecs_connexion + 1 >= $2
+                                THEN now() + make_interval(mins => $3) ELSE verrouille_jusqua END
+     WHERE id_operateur = $1
+     RETURNING (verrouille_jusqua > now()) AS verrouille`,
+    [id, maxEchecs, minutes]
+  );
+  return Boolean(rows[0] && rows[0].verrouille);
+}
+
+async function reinitialiserEchecs(id) {
+  await query('UPDATE operateur SET echecs_connexion = 0, verrouille_jusqua = NULL WHERE id_operateur = $1', [id]);
+}
+
+module.exports = { trouverParEmail, trouverParId, creer, enregistrerEchec, reinitialiserEchecs };

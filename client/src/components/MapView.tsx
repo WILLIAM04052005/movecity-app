@@ -20,6 +20,17 @@ interface Couches {
   recherche: L.LayerGroup;
 }
 
+function margesCadrage(): { haut: number; bas: number } {
+  const panneau = document.querySelector('.recherche')?.getBoundingClientRect();
+  let haut = 140;
+  let bas = 140;
+  if (panneau) {
+    if ((panneau.top + panneau.bottom) / 2 > window.innerHeight / 2) bas = window.innerHeight - panneau.top + 30;
+    else haut = panneau.bottom + 30;
+  }
+  return { haut, bas };
+}
+
 /** Contenu de tooltip construit en texte pur (jamais d'HTML venant des données). */
 function texteTooltip(contenu: string): HTMLElement {
   const el = document.createElement('div');
@@ -29,7 +40,8 @@ function texteTooltip(contenu: string): HTMLElement {
 
 /** Carte plein écran. La position de la borne vient de la base (position réelle fixe). */
 export function MapView({ config }: { config: KioskConfig }) {
-  const { etats, persona, recherche, stationFocus, langue, t } = useKiosk();
+  const { etats, persona, recherche, stationChoisie, stationFocus, langue, mode, itineraires, t } = useKiosk();
+  const etatItineraire = itineraires[mode];
   const conteneur = useRef<HTMLDivElement>(null);
   const carte = useRef<L.Map | null>(null);
   const couches = useRef<Couches | null>(null);
@@ -139,13 +151,49 @@ export function MapView({ config }: { config: KioskConfig }) {
       .addTo(c.recherche);
 
     const points: L.LatLngTuple[] = [[adresse.latitude, adresse.longitude]];
-    const plusProche = proches[0];
-    if (plusProche) {
-      points.push([plusProche.latitude, plusProche.longitude]);
-      L.polyline(points, { color: '#222222', weight: 4, dashArray: '8 8' }).addTo(c.recherche);
+    const borne: L.LatLngTuple = [config.latitude, config.longitude];
+    const pointille = { color: '#222222', weight: 4, dashArray: '8 8' };
+
+    if (stationChoisie) {
+      const station: L.LatLngTuple = [stationChoisie.latitude, stationChoisie.longitude];
+      const adressePt: L.LatLngTuple = [adresse.latitude, adresse.longitude];
+
+      if (etatItineraire?.statut === 'ok') {
+        etatItineraire.itineraire.etapes.forEach(etape => {
+          if (etape.geometrie.length < 2) return;
+          points.push(...etape.geometrie);
+          if (etape.type === 'transport') {
+            L.polyline(etape.geometrie, { color: '#222222', weight: 11, opacity: 0.9 }).addTo(c.recherche);
+            L.polyline(etape.geometrie, { color: etape.couleur ?? '#BB4D98', weight: 7 }).addTo(c.recherche);
+          } else if (etape.type === 'marche') {
+            L.polyline(etape.geometrie, { color: '#222222', weight: 6, dashArray: '2 10', lineCap: 'round' }).addTo(c.recherche);
+          } else {
+            L.polyline(etape.geometrie, { color: '#222222', weight: 6 }).addTo(c.recherche);
+          }
+        });
+      } else if (mode === 'transit') {
+        points.push(borne, station);
+        L.polyline([borne, station], pointille).addTo(c.recherche);
+        L.polyline([station, adressePt], { ...pointille, dashArray: '2 10', lineCap: 'round' }).addTo(c.recherche);
+      } else {
+        points.push(borne);
+        L.polyline([borne, adressePt], pointille).addTo(c.recherche);
+      }
+    } else {
+      const plusProche = proches[0];
+      if (plusProche) {
+        points.push([plusProche.latitude, plusProche.longitude]);
+        L.polyline(points, pointille).addTo(c.recherche);
+      }
     }
-    map.fitBounds(L.latLngBounds(points), { padding: [140, 140], maxZoom: 17 });
-  }, [recherche, langue]);
+
+    const { haut, bas } = margesCadrage();
+    map.fitBounds(L.latLngBounds(points), {
+      paddingTopLeft: [60, haut],
+      paddingBottomRight: [60, bas],
+      maxZoom: 17
+    });
+  }, [recherche, stationChoisie, etatItineraire, mode, config, langue]);
 
   // 5. Clic sur une station dans une liste : on y amène la carte
   useEffect(() => {

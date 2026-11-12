@@ -46,7 +46,30 @@ const fr = {
   erreurChargement: 'Impossible de charger les données de la borne.',
   reessayer: 'Réessayer',
   langueChoix: 'Langue',
-  carte: 'Carte du quartier'
+  carte: 'Carte du quartier',
+  itineraireVers: 'Itinéraire vers',
+  changerStation: 'Changer de station',
+  nouvelleRecherche: 'Nouvelle recherche',
+  choixTransport: 'Mode de transport',
+  modeTransit: 'Métro / RER',
+  modeFoot: 'Marche',
+  modeBike: 'Vélo',
+  modeCar: 'Voiture',
+  calcul: 'Calcul…',
+  indisponible: 'Indisponible',
+  tracIndicatif: 'Tracé indicatif : le détail complet s’affichera sur votre téléphone.',
+  etapeMarche: 'Marche',
+  etapeVelo: 'Vélo',
+  etapeVoiture: 'Voiture',
+  etapeVers: 'vers',
+  viaStation: 'Via',
+  envoyerTelephone: 'Suivre sur mon téléphone',
+  qrTitre: 'Continuez sur votre téléphone',
+  qrTexte: 'Scannez ce code avec l’appareil photo de votre téléphone pour suivre votre itinéraire.',
+  qrAnonyme: 'Rien n’est enregistré par la borne. Ce code disparaît au retour à l’accueil.',
+  qrAlt: 'Code QR de l’itinéraire',
+  afficherDetail: 'Afficher le détail',
+  masquerDetail: 'Masquer le détail'
 };
 
 export type CleTexte = keyof typeof fr;
@@ -97,7 +120,30 @@ const en: Record<CleTexte, string> = {
   erreurChargement: 'Unable to load the kiosk data.',
   reessayer: 'Try again',
   langueChoix: 'Language',
-  carte: 'Neighbourhood map'
+  carte: 'Neighbourhood map',
+  itineraireVers: 'Route to',
+  changerStation: 'Change station',
+  nouvelleRecherche: 'New search',
+  choixTransport: 'Mode of transport',
+  modeTransit: 'Metro / RER',
+  modeFoot: 'Walking',
+  modeBike: 'Cycling',
+  modeCar: 'Car',
+  calcul: 'Calculating…',
+  indisponible: 'Unavailable',
+  tracIndicatif: 'Approximate line: the full details will show on your phone.',
+  etapeMarche: 'Walk',
+  etapeVelo: 'Cycle',
+  etapeVoiture: 'Drive',
+  etapeVers: 'to',
+  viaStation: 'Via',
+  envoyerTelephone: 'Follow on my phone',
+  qrTitre: 'Continue on your phone',
+  qrTexte: 'Scan this code with your phone’s camera to follow your route.',
+  qrAnonyme: 'Nothing is stored by the kiosk. This code disappears when the screen returns to the home page.',
+  qrAlt: 'Route QR code',
+  afficherDetail: 'Show details',
+  masquerDetail: 'Hide details'
 };
 
 const dictionnaires: Record<Langue, Record<CleTexte, string>> = { fr, en };

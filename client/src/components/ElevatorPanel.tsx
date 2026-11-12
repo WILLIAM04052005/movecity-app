@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useKiosk } from '../context/KioskContext';
 import { estAncienne, formatMaj } from '../utils/ascenseurs';
 import { formatDistance, trierParDistance } from '../utils/geo';
@@ -9,6 +10,7 @@ import type { StatutAscenseur } from '../types';
 /** Panneau réservé au profil PMR : disponibilité et état des ascenseurs. */
 export function ElevatorPanel() {
   const { etats, t, langue, setStationFocus } = useKiosk();
+  const [ouvert, setOuvert] = useState(false);
 
   const compte = (statut: StatutAscenseur) => etats.filter(e => e.statut === statut).length;
   const accessibles = useMemo(
@@ -17,22 +19,32 @@ export function ElevatorPanel() {
   );
 
   return (
-    <aside className="panneau panneau-ascenseurs" aria-labelledby="titre-ascenseurs">
-      <h2 id="titre-ascenseurs">{t('etatAscenseurs')}</h2>
+    <aside className="panneau panneau-ascenseurs" aria-label={t('etatAscenseurs')}>
+      <button
+        type="button"
+        className="tiroir-tete"
+        aria-expanded={ouvert}
+        aria-controls="contenu-ascenseurs"
+        title={ouvert ? t('masquerDetail') : t('afficherDetail')}
+        onClick={() => setOuvert(o => !o)}
+      >
+        <span className="tiroir-titre">{t('etatAscenseurs')}</span>
+        {ouvert ? <ChevronUp size={26} aria-hidden="true" /> : <ChevronDown size={26} aria-hidden="true" />}
+        <span className="resume">
+          <span className="badge-statut badge-statut--disponible">
+            {compte('disponible')} {t('disponibles')}
+          </span>
+          <span className="badge-statut badge-statut--en_panne">
+            {compte('en_panne')} {t('enPannePluriel')}
+          </span>
+          <span className="badge-statut badge-statut--inconnu">
+            {compte('inconnu')} {t('inconnus')}
+          </span>
+        </span>
+      </button>
 
-      <p className="resume">
-        <span className="badge-statut badge-statut--disponible">
-          {compte('disponible')} {t('disponibles')}
-        </span>
-        <span className="badge-statut badge-statut--en_panne">
-          {compte('en_panne')} {t('enPannePluriel')}
-        </span>
-        <span className="badge-statut badge-statut--inconnu">
-          {compte('inconnu')} {t('inconnus')}
-        </span>
-      </p>
-
-      <ul className="liste-etats">
+      {ouvert && (
+      <ul id="contenu-ascenseurs" className="liste-etats">
         {etats.map(({ station, statut, cause, dateMaj }) => {
           const alternative =
             statut === 'en_panne'
@@ -77,7 +89,7 @@ export function ElevatorPanel() {
           );
         })}
       </ul>
-
+      )}
     </aside>
   );
 }

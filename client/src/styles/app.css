@@ -231,3 +231,46 @@ ul { margin: 0; padding: 0; list-style: none; }
   .barre-haute .btn { width: var(--zone-tactile); height: var(--zone-tactile); padding: 0; font-size: 0; gap: 0; }
   .champ-recherche .btn[type='submit'] { width: var(--zone-tactile); padding: 0; font-size: 0; gap: 0; }
 }
+
+/* ---------- Tiroir « État des ascenseurs » (PMR) ---------- */
+.panneau-ascenseurs { padding: 0; }
+.tiroir-tete {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.5rem 0.75rem;
+  width: 100%; min-height: var(--zone-tactile); padding: 0.75rem 1rem;
+  font: inherit; color: inherit; text-align: left; background: none; border: 0; cursor: pointer;
+}
+.tiroir-titre { font-size: 1.25rem; font-weight: 700; }
+.tiroir-tete .resume { grid-column: 1 / -1; margin-bottom: 0; }
+.panneau-ascenseurs .liste-etats { max-height: 45vh; overflow: auto; padding: 0 1rem 1rem; }
+
+/* ---------- Itinéraire (après le choix d'une station) ---------- */
+.itineraire { display: grid; gap: 0.6rem; }
+.itineraire-tete { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+.itineraire-tete .resultats-titre { margin: 0; }
+.itineraire-via { display: block; font-weight: 600; font-size: 0.9rem; }
+.btn--petit { min-height: 2.75rem; height: auto; padding: 0.3rem 1rem; font-size: 0.95rem; flex: none; }
+.modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.5rem; }
+.mode {
+  display: grid; justify-items: center; gap: 0.1rem; padding: 0.5rem 0.4rem; font: inherit; color: inherit;
+  background: var(--couleur-fond); border: 2px solid var(--couleur-texte); border-radius: 0.9rem; cursor: pointer;
+}
+.mode[aria-pressed='true'] { background: var(--couleur-accent); }
+.mode-nom { font-weight: 700; font-size: 0.95rem; }
+.mode-detail { font-size: 0.85rem; }
+.etapes { display: grid; gap: 0.35rem; max-height: 8.5rem; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.etape { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.6rem; font-size: 0.95rem; }
+.etape-type { font-weight: 700; min-width: 4.5rem; }
+.etape-duree { font-weight: 700; white-space: nowrap; }
+.btn-qr { justify-self: stretch; }
+.qr { display: grid; justify-items: center; padding: 0.5rem; background: #ffffff; border: 2px solid var(--couleur-texte); border-radius: 1rem; min-height: 18.5rem; align-content: center; }
+.qr img { display: block; image-rendering: pixelated; }
+.apercu { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; }
+.apercu-etape { display: inline-flex; align-items: center; gap: 0.4rem; }
+.lien-detail {
+  display: inline-flex; align-items: center; gap: 0.25rem; min-height: 2.75rem; margin-left: auto; padding: 0 0.5rem;
+  font: inherit; font-size: 0.9rem; font-weight: 600; color: inherit; background: none; border: 0; cursor: pointer; text-decoration: underline;
+}
+.itineraire-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.4rem; }
+.itineraire .modes { grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr)); }
+.itineraire .mode { padding: 0.35rem 0.3rem; }
+

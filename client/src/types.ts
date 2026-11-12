@@ -58,7 +58,7 @@ export interface EtatStation {
   dateMaj: Date | null;
 }
 
-/** Réponse de GET /api/ascenseurs/stats */
+/** Réponse de GET /api/ascenseurs/stats (vue « accessibilité du réseau »). */
 export interface StatsAscenseurs {
   total: number;
   disponibles: number;
@@ -68,6 +68,33 @@ export interface StatsAscenseurs {
   derniere_maj: string | null;
   pannes_par_ligne: { code_ligne: string; type_ligne: string; total: number; en_panne: number }[];
 }
+
+export type ModeTransport = 'transit' | 'foot' | 'bike' | 'car';
+
+export interface EtapeItineraire {
+  type: 'transport' | 'marche' | 'velo' | 'voiture';
+  ligne?: string | null;
+  couleur?: string | null;
+  direction?: string | null;
+  depuis: string | null;
+  vers: string | null;
+  distance_m: number;
+  duree_s: number;
+  geometrie: [number, number][];
+}
+
+export interface Itineraire {
+  mode: ModeTransport;
+  source: 'prim' | 'osm';
+  distance_m: number;
+  duree_s: number;
+  etapes: EtapeItineraire[];
+}
+
+export type EtatItineraire =
+  | { statut: 'chargement' }
+  | { statut: 'erreur' }
+  | { statut: 'ok'; itineraire: Itineraire };
 
 export interface Recherche {
   adresse: AdresseTrouvee;

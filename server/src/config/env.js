@@ -59,10 +59,25 @@ const config = {
     // Le flux n'est mis à jour qu'environ 3 fois par jour : inutile d'interroger plus souvent.
     intervalleMinutes: Math.max(30, entier('IDFM_SYNC_INTERVALLE_MIN', 180))
   },
-  banUrl: 'https://api-adresse.data.gouv.fr/search/',
+  banUrl: process.env.BAN_URL || 'https://data.geopf.fr/geocodage/search/',
+  prim: {
+    url: env.PRIM_URL || 'https://prim.iledefrance-mobilites.fr/marketplace/v2/navitia/journeys',
+    cle: env.PRIM_API_KEY || ''
+  },
+  routage: {
+    url: (env.ROUTAGE_URL || 'https://routing.openstreetmap.de').replace(/\/+$/, '')
+  },
+
+  // Verrouillage d'un compte après trop d'échecs de connexion
+  securite: {
+    maxEchecsConnexion: entier('MAX_ECHECS_CONNEXION', 5),
+    verrouillageMinutes: entier('VERROUILLAGE_MINUTES', 15),
+    longueurMinMotDePasse: 12
+  },
 
   limites: {
     geocodeParMinute: entier('LIMITE_GEOCODE_PAR_MINUTE', 30),
+    itineraireParMinute: entier('LIMITE_ITINERAIRE_PAR_MINUTE', 60),
     loginParQuinzeMinutes: estTest ? 1000 : entier('LIMITE_LOGIN_PAR_15MIN', 10)
   }
 };
@@ -84,9 +99,18 @@ if (manquants.length > 0) {
   process.exit(1);
 }
 
-const secretFaible = config.jwt.secret.length < 32 || config.jwt.secret.startsWith('remplacez-par');
+const secretFaible = config.jwt.secret.length < 32 || /remplacez|changez|secret|exemple/i.test(config.jwt.secret);
 if (estProduction && secretFaible) {
-  console.error('JWT_SECRET trop faible pour la production (32 caractères aléatoires minimum).');
+  console.error('JWT_SECRET trop faible pour la production (32 caractères aléatoires minimum, sans mot d\'exemple).');
+  process.exit(1);
+}
+// Un mot de passe opérateur trop court est refusé partout (seed, script, production).
+if (config.admin.password && config.admin.password.length < config.securite.longueurMinMotDePasse) {
+  console.error(`ADMIN_PASSWORD trop court (${config.securite.longueurMinMotDePasse} caractères minimum). Laissez-le vide pour ne pas créer de compte.`);
+  process.exit(1);
+}
+if (estProduction && /^ChangeMoi/i.test(config.admin.password)) {
+  console.error('ADMIN_PASSWORD est encore la valeur d\'exemple : choisissez un mot de passe personnel.');
   process.exit(1);
 }
 if (!estProduction && !estTest && secretFaible) {

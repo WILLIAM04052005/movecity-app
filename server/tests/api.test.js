@@ -17,7 +17,7 @@ const { synchroniser } = require('../src/sync/idfm.sync');
 const { lireFichier } = require('../src/sync/idfm.client');
 const path = require('node:path');
 
-//ces tests effacent la base. On refuse de tourner sur autre chose qu'une base *_test.
+// Garde-fou : ces tests effacent la base. On refuse de tourner sur autre chose qu'une base *_test.
 if (!config.db.url && !config.db.database.endsWith('_test')) {
   throw new Error(`Refus : la base "${config.db.database}" n'est pas une base de test.`);
 }
@@ -28,7 +28,20 @@ const fetchOriginal = global.fetch;
 
 // --- Simulation de la Base Adresse Nationale (aucun appel réseau pendant les tests) ---
 let reponseBan = { status: 200, body: { features: [{ geometry: { coordinates: [2.3606, 48.8559] }, properties: { label: '10 Rue de Rivoli 75004 Paris' } }] } };
+let reponseRoutage = null;
+let reponsePrim = null;
+const appelsExternes = [];
 global.fetch = (url, options) => {
+  if (String(url).startsWith(config.routage.url) && reponseRoutage) {
+    appelsExternes.push({ url: String(url), options });
+    if (reponseRoutage.erreurReseau) return Promise.reject(new Error('réseau coupé'));
+    return Promise.resolve(new Response(JSON.stringify(reponseRoutage.body), { status: reponseRoutage.status || 200 }));
+  }
+  if (String(url).startsWith(config.prim.url) && reponsePrim) {
+    appelsExternes.push({ url: String(url), options });
+    if (reponsePrim.erreurReseau) return Promise.reject(new Error('réseau coupé'));
+    return Promise.resolve(new Response(JSON.stringify(reponsePrim.body), { status: reponsePrim.status || 200 }));
+  }
   if (String(url).startsWith(config.banUrl)) {
     if (reponseBan.erreurReseau) return Promise.reject(new Error('réseau coupé'));
     return Promise.resolve(new Response(JSON.stringify(reponseBan.body), { status: reponseBan.status, headers: { 'content-type': 'application/json' } }));
@@ -392,5 +405,189 @@ describe('Synchronisation IDFM (fichier d\'exemple, base de test)', () => {
   test('GET /ascenseurs expose le libellé', async () => {
     const r = await appel('GET', '/ascenseurs?statut=en_panne');
     assert.ok(r.data.some(a => a.libelle && a.libelle.startsWith('Quai RER A')));
+  });
+});
+
+describe('Sécurité : verrouillage, audit, configuration', () => {
+  const bcrypt = require('bcryptjs');
+  const { spawnSync } = require('node:child_process');
+  const operateurs = require('../src/models/operateurs.model');
+  const EMAIL = 'verrou@movecity.local';
+  const MDP = 'Verrou-Mot-De-Passe-1';
+  const login = (password, email = EMAIL) => appel('POST', '/auth/login', { body: { email, password } });
+
+  test('5 échecs → compte verrouillé : même un bon mot de passe est refusé (réponse identique)', async () => {
+    await operateurs.creer(EMAIL, await bcrypt.hash(MDP, 10));
+    for (let i = 0; i < config.securite.maxEchecsConnexion; i++) assert.equal((await login('mauvais')).status, 401);
+
+    const refuse = await login(MDP);
+    const inconnu = await login('mauvais', 'inconnu@x.fr');
+    assert.equal(refuse.status, 401);
+    assert.deepEqual(refuse.data, inconnu.data); // on ne révèle pas que le compte existe
+
+    const { rows } = await pool.query('SELECT verrouille_jusqua FROM operateur WHERE email = $1', [EMAIL]);
+    assert.ok(new Date(rows[0].verrouille_jusqua) > new Date());
+  });
+
+  test('fin du verrouillage → connexion possible, compteur remis à zéro', async () => {
+    await pool.query("UPDATE operateur SET verrouille_jusqua = now() - interval '1 minute' WHERE email = $1", [EMAIL]);
+    assert.equal((await login(MDP)).status, 200);
+    const { rows } = await pool.query('SELECT echecs_connexion, verrouille_jusqua FROM operateur WHERE email = $1', [EMAIL]);
+    assert.equal(rows[0].echecs_connexion, 0);
+    assert.equal(rows[0].verrouille_jusqua, null);
+  });
+
+  test('un succès au milieu remet le compteur à zéro', async () => {
+    for (let i = 0; i < config.securite.maxEchecsConnexion - 1; i++) await login('mauvais');
+    assert.equal((await login(MDP)).status, 200);
+    for (let i = 0; i < config.securite.maxEchecsConnexion - 1; i++) await login('mauvais');
+    assert.equal((await login(MDP)).status, 200); // jamais 5 échecs d'affilée
+  });
+
+  test('GET /audit : protégé, et les actions opérateur y sont tracées (sans mot de passe)', async () => {
+    assert.equal((await appel('GET', '/audit')).status, 401);
+    const s = await appel('POST', '/stations', { token, body: { nom_station: 'Station audit', latitude: 48.85, longitude: 2.35 } });
+    await appel('DELETE', `/stations/${s.data.id_station}`, { token });
+
+    const r = await appel('GET', '/audit?limite=50', { token });
+    assert.equal(r.status, 200);
+    const actions = r.data.map(l => l.action);
+    for (const attendu of ['connexion', 'connexion_echec', 'compte_verrouille', 'station_creee', 'station_supprimee', 'ascenseur_modifie']) {
+      assert.ok(actions.includes(attendu), `action manquante : ${attendu}`);
+    }
+    assert.equal(JSON.stringify(r.data).toLowerCase().includes('password'), false);
+    assert.equal((await appel('GET', '/audit?limite=0', { token })).status, 400);
+  });
+
+  test('l’audit garde l’e-mail même si le compte est supprimé', async () => {
+    await pool.query('DELETE FROM operateur WHERE email = $1', [EMAIL]);
+    const { rows } = await pool.query('SELECT 1 FROM journal_audit WHERE email_operateur = $1 AND id_operateur IS NULL LIMIT 1', [EMAIL]);
+    assert.equal(rows.length, 1);
+  });
+
+  // Le serveur doit refuser de démarrer en production avec une configuration dangereuse.
+  function demarrerEnProduction(surcharges) {
+    const r = spawnSync(process.execPath, ['-e', "require('./server/src/config/env')"], {
+      cwd: path.join(__dirname, '..', '..'),
+      env: { ...process.env, NODE_ENV: 'production', DB_USER: 'x', DB_PASSWORD: 'x', DB_NAME: 'x',
+             JWT_SECRET: 'a'.repeat(48), ADMIN_PASSWORD: '', ...surcharges },
+      encoding: 'utf8'
+    });
+    return { code: r.status, erreur: r.stderr };
+  }
+
+  test('production : secret JWT faible, copié de l’exemple ou mot de passe par défaut → refus de démarrer', () => {
+    assert.equal(demarrerEnProduction({}).code, 0);
+    assert.equal(demarrerEnProduction({ JWT_SECRET: 'court' }).code, 1);
+    assert.equal(demarrerEnProduction({ JWT_SECRET: 'remplacez-par-une-longue-chaine-aleatoire-de-48-caracteres-minimum' }).code, 1);
+    const r = demarrerEnProduction({ ADMIN_PASSWORD: 'ChangeMoi-Movecity-2026!' });
+    assert.equal(r.code, 1);
+    assert.match(r.erreur, /valeur d'exemple/);
+  });
+
+  test('mot de passe administrateur trop court → refus (toutes configurations)', () => {
+    const r = demarrerEnProduction({ NODE_ENV: 'development', ADMIN_PASSWORD: 'court' });
+    assert.equal(r.code, 1);
+    assert.match(r.erreur, /trop court/);
+  });
+});
+
+describe('Itinéraires (marche, vélo, voiture, transports en commun)', () => {
+  const routage = { routes: [{ distance: 2500, duration: 1800, geometry: { coordinates: [[2.3470, 48.8586], [2.3606, 48.8559]] } }] };
+  const navitia = {
+    journeys: [
+      {
+        duration: 600,
+        sections: [
+          {
+            type: 'public_transport',
+            duration: 600,
+            from: { name: 'Châtelet' },
+            to: { name: 'Saint-Michel' },
+            display_informations: { commercial_mode: 'Métro', code: '4', color: 'BB4D98' },
+            geojson: { coordinates: [[2.3470, 48.8586], [2.3440, 48.8535]] }
+          }
+        ]
+      }
+    ]
+  };
+  const requete = 'lat=48.8559&lon=2.3606';
+
+  test('marche / vélo / voiture : la position de départ est celle de la borne, lue en base', async () => {
+    reponseRoutage = { body: routage };
+    appelsExternes.length = 0;
+    const r = await appel('GET', `/itineraire?${requete}&mode=bike`);
+    assert.equal(r.status, 200);
+    assert.equal(r.data.mode, 'bike');
+    assert.equal(r.data.distance_m, 2500);
+    assert.equal(r.data.etapes[0].type, 'velo');
+    assert.match(appelsExternes[0].url, /routed-bike/);
+    const borne = (await appel('GET', '/kiosk/config')).data;
+    assert.ok(appelsExternes[0].url.includes(`${borne.longitude},${borne.latitude};`));
+    assert.equal((await appel('GET', `/itineraire?${requete}&mode=car`)).data.etapes[0].type, 'voiture');
+    assert.match(appelsExternes.at(-1).url, /routed-car/);
+  });
+
+  test('transports sans clé PRIM → 503 explicite', async () => {
+    reponsePrim = { body: navitia };
+    const cle = config.prim.cle;
+    config.prim.cle = '';
+    const r = await appel('GET', `/itineraire?${requete}&mode=transit`);
+    config.prim.cle = cle;
+    assert.equal(r.status, 503);
+    assert.match(r.data.error, /PRIM/);
+  });
+
+  test('transports : la clé part dans l’en-tête apikey et n’est jamais renvoyée au client', async () => {
+    config.prim.cle = 'cle-de-test-secrete';
+    reponsePrim = { body: navitia };
+    appelsExternes.length = 0;
+    const r = await appel('GET', `/itineraire?${requete}&mode=transit&pmr=1`);
+    assert.equal(r.status, 200);
+    assert.equal(r.data.source, 'prim');
+    assert.equal(r.data.etapes[0].ligne, 'M4');
+    assert.equal(appelsExternes[0].options.headers.apikey, 'cle-de-test-secrete');
+    assert.match(appelsExternes[0].url, /traveler_type=wheelchair/);
+    assert.equal(JSON.stringify(r.data).includes('cle-de-test-secrete'), false);
+  });
+
+  test('transports avec station choisie : métro jusqu’à la station, puis marche jusqu’à l’adresse', async () => {
+    reponseRoutage = { body: routage };
+    reponsePrim = { body: navitia };
+    appelsExternes.length = 0;
+    const r = await appel('GET', `/itineraire?${requete}&mode=transit&via_lat=48.8535&via_lon=2.3440`);
+    assert.equal(r.status, 200);
+    assert.deepEqual(r.data.etapes.map(e => e.type), ['transport', 'marche']);
+    assert.equal(r.data.distance_m, r.data.etapes[0].distance_m + 2500);
+    assert.equal(r.data.duree_s, 600 + 1800);
+    assert.equal(appelsExternes.length, 2);
+  });
+
+  test('service externe en panne → 503 ; aucun trajet → 404', async () => {
+    reponseRoutage = { erreurReseau: true };
+    assert.equal((await appel('GET', `/itineraire?${requete}&mode=foot`)).status, 503);
+    reponseRoutage = { body: { routes: [] } };
+    assert.equal((await appel('GET', `/itineraire?${requete}&mode=foot`)).status, 404);
+    reponseRoutage = { status: 500, body: {} };
+    assert.equal((await appel('GET', `/itineraire?${requete}&mode=foot`)).status, 503);
+  });
+
+  test('paramètres invalides → 400', async () => {
+    assert.equal((await appel('GET', '/itineraire?lat=48.85&lon=2.35')).status, 400);
+    assert.equal((await appel('GET', `/itineraire?${requete}&mode=avion`)).status, 400);
+    assert.equal((await appel('GET', '/itineraire?lat=abc&lon=2.35&mode=foot')).status, 400);
+    assert.equal((await appel('GET', '/itineraire?lat=148&lon=2.35&mode=foot')).status, 400);
+    assert.equal((await appel('GET', `/itineraire?${requete}&mode=foot&via_lat=48.85`)).status, 400);
+  });
+
+  test('limitation de débit → 429', async () => {
+    reponseRoutage = { body: routage };
+    let dernier;
+    for (let i = 0; i < 80 && (!dernier || dernier.status !== 429); i++) dernier = await appel('GET', `/itineraire?${requete}&mode=foot`);
+    assert.equal(dernier.status, 429);
+    assert.ok(dernier.headers.get('retry-after'));
+    config.prim.cle = '';
+    reponseRoutage = null;
+    reponsePrim = null;
   });
 });

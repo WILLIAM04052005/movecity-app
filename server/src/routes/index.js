@@ -16,6 +16,8 @@ const ascenseurs = require('../controllers/ascenseurs.controller');
 const geocode = require('../controllers/geocode.controller');
 const auth = require('../controllers/auth.controller');
 const stats = require('../controllers/stats.controller');
+const auditCtrl = require('../controllers/audit.controller');
+const itineraire = require('../controllers/itineraire.controller');
 
 const router = express.Router();
 const idParam = valider(schemas.params.id, 'params');
@@ -53,6 +55,13 @@ router.get(
   geocode.rechercher
 );
 
+router.get(
+  '/itineraire',
+  limiteDebit({ fenetreMs: 60_000, max: config.limites.itineraireParMinute }),
+  valider(schemas.itineraire, 'query'),
+  itineraire.calculer
+);
+
 // --- Authentification opérateur (tentatives limitées contre le brute-force) ---
 router.post(
   '/auth/login',
@@ -64,5 +73,8 @@ router.get('/auth/me', exigerOperateur, auth.moi);
 
 // --- Statistiques d'usage (opérateur) ---
 router.get('/stats/usage', exigerOperateur, valider(schemas.stats.usage, 'query'), stats.usage);
+
+// --- Journal d'audit (opérateur) ---
+router.get('/audit', exigerOperateur, valider(schemas.audit.lister, 'query'), auditCtrl.lister);
 
 module.exports = router;

@@ -3,12 +3,13 @@ import { BottomBar } from './BottomBar';
 import { ElevatorPanel } from './ElevatorPanel';
 import { HelpModal } from './HelpModal';
 import { MapView } from './MapView';
+import { QrItineraire } from './QrItineraire';
 import { SearchPanel } from './SearchPanel';
 import { TopBar } from './TopBar';
 
 /** Écran principal : carte en fond, panneaux par-dessus (wireframe validé). */
 export function KioskScreen() {
-  const { config, chargement, erreur, recharger, persona, aideOuverte, t } = useKiosk();
+  const { config, chargement, erreur, recharger, persona, aideOuverte, qrOuvert, t } = useKiosk();
 
   if (!config) {
     return (
@@ -43,6 +44,7 @@ export function KioskScreen() {
       </div>
 
       {aideOuverte && <HelpModal />}
+      {qrOuvert && <QrItineraire />}
     </div>
   );
 }

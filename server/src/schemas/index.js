@@ -73,4 +73,21 @@ const stats = {
   usage: z.object({ jours: z.coerce.number().int().min(1).max(365).default(30) })
 };
 
-module.exports = { params, stations, ascenseurs, auth, geocode, stats };
+const itineraire = z
+  .object({
+    lat: latitude,
+    lon: longitude,
+    mode: z.enum(['transit', 'foot', 'bike', 'car']),
+    via_lat: latitude.optional(),
+    via_lon: longitude.optional(),
+    pmr: z.enum(['0', '1']).default('0').transform(v => v === '1')
+  })
+  .refine(q => (q.via_lat === undefined) === (q.via_lon === undefined), {
+    message: 'via_lat et via_lon vont ensemble.'
+  });
+
+const audit = {
+  lister: z.object({ limite: z.coerce.number().int().min(1).max(500).default(100) })
+};
+
+module.exports = { params, stations, ascenseurs, auth, geocode, stats, audit, itineraire };

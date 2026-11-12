@@ -1,4 +1,4 @@
-import type { AdresseTrouvee, Ascenseur, KioskConfig, Langue, Station } from './types';
+import type { AdresseTrouvee, Ascenseur, Itineraire, KioskConfig, Langue, ModeTransport, Station } from './types';
 
 async function getJson<T>(url: string): Promise<T> {
   const reponse = await fetch(url);
@@ -30,4 +30,26 @@ export async function geocoder(adresse: string, langue: Langue): Promise<Adresse
   if (reponse.status === 429) throw new GeocodageErreur('trop_de_requetes');
   if (!reponse.ok) throw new GeocodageErreur('indisponible');
   return reponse.json() as Promise<AdresseTrouvee>;
+}
+
+export interface DemandeItineraire {
+  mode: ModeTransport;
+  lat: number;
+  lon: number;
+  via?: { lat: number; lon: number };
+  pmr: boolean;
+}
+
+export async function chargerItineraire(demande: DemandeItineraire): Promise<Itineraire> {
+  const params = new URLSearchParams({
+    mode: demande.mode,
+    lat: String(demande.lat),
+    lon: String(demande.lon),
+    pmr: demande.pmr ? '1' : '0'
+  });
+  if (demande.via && demande.mode === 'transit') {
+    params.set('via_lat', String(demande.via.lat));
+    params.set('via_lon', String(demande.via.lon));
+  }
+  return getJson<Itineraire>(`/api/itineraire?${params}`);
 }

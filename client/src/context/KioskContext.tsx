@@ -2,7 +2,9 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { traduire, type CleTexte } from '../i18n';
 import { useDonneesBorne, type DonneesBorne } from '../hooks/useDonneesBorne';
 import { etatDesStations } from '../utils/ascenseurs';
-import type { EtatStation, Langue, Persona, Recherche, Station } from '../types';
+import { useItineraires, type EtatsItineraires } from '../hooks/useItineraires';
+import { modesPour } from '../utils/itineraire';
+import type { EtatStation, Langue, ModeTransport, Persona, Recherche, Station } from '../types';
 
 interface KioskContextValue extends DonneesBorne {
   persona: Persona | null;
@@ -11,6 +13,14 @@ interface KioskContextValue extends DonneesBorne {
   recherche: Recherche | null;
   stationFocus: Station | null;
   aideOuverte: boolean;
+  stationChoisie: Station | null;
+  modes: ModeTransport[];
+  mode: ModeTransport;
+  itineraires: EtatsItineraires;
+  qrOuvert: boolean;
+  setStationChoisie: (s: Station | null) => void;
+  setMode: (m: ModeTransport) => void;
+  setQrOuvert: (ouvert: boolean) => void;
   choisirPersona: (p: Persona) => void;
   changerProfil: () => void;
   setLangue: (l: Langue) => void;
@@ -31,6 +41,19 @@ export function KioskProvider({ children }: { children: ReactNode }) {
   const [recherche, setRecherche] = useState<Recherche | null>(null);
   const [stationFocus, setStationFocus] = useState<Station | null>(null);
   const [aideOuverte, setAideOuverte] = useState(false);
+  const [stationChoisie, setStationChoisie] = useState<Station | null>(null);
+  const [modeChoisi, setMode] = useState<ModeTransport>('transit');
+  const [qrOuvert, setQrOuvert] = useState(false);
+
+  const modes = useMemo(() => modesPour(persona), [persona]);
+  const mode = modes.includes(modeChoisi) ? modeChoisi : 'transit';
+  const departLat = donnees.config?.latitude;
+  const departLon = donnees.config?.longitude;
+  const depart = useMemo(
+    () => (departLat !== undefined && departLon !== undefined ? { lat: departLat, lon: departLon } : null),
+    [departLat, departLon]
+  );
+  const itineraires = useItineraires(depart, recherche, stationChoisie, modes, persona === 'pmr');
 
   const etats = useMemo(
     () => etatDesStations(donnees.stations, donnees.ascenseurs),
@@ -41,6 +64,9 @@ export function KioskProvider({ children }: { children: ReactNode }) {
     setRecherche(null);
     setStationFocus(null);
     setAideOuverte(false);
+    setStationChoisie(null);
+    setMode('transit');
+    setQrOuvert(false);
   }, []);
 
   const choisirPersona = useCallback((p: Persona) => setPersona(p), []);
@@ -69,6 +95,14 @@ export function KioskProvider({ children }: { children: ReactNode }) {
     recherche,
     stationFocus,
     aideOuverte,
+    stationChoisie,
+    modes,
+    mode,
+    itineraires,
+    qrOuvert,
+    setStationChoisie,
+    setMode,
+    setQrOuvert,
     choisirPersona,
     changerProfil,
     setLangue,
