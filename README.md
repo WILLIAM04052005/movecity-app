@@ -4,7 +4,7 @@ Borne anonyme, sans compte, installée en station de métro. Elle aide les **tou
 
 ## Parcours utilisateur
 
-1. Accueil : **« Bienvenue sur Movecity, vous êtes ? »** → *Touriste*, *Senior*, *PMR*.
+1. Accueil : **« Bienvenue sur Movecity, vous êtes ? »** - *Touriste*, *Senior*, *PMR*.
 2. L'écran s'adapte au profil. Seul le profil **PMR** affiche l'état des ascenseurs (panneau + marqueurs ✓ ✕ ?).
 3. « Vous êtes ici » = position réelle et fixe de la borne (lue en base).
 4. 60 s sans interaction + 10 s d'avertissement → retour à l'accueil, session effacée.
