@@ -6,7 +6,6 @@ const { HttpError, asyncHandler } = require('../utils/http');
 /**
  * GET /api/geocode?q=adresse&lang=fr|en
  * Cherche une adresse réelle via la Base Adresse Nationale (API officielle, gratuite).
- *
  * RGPD / minimisation : l'adresse tapée n'est JAMAIS stockée. On journalise
  * uniquement la station la plus proche, la langue et l'heure.
  */

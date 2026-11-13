@@ -1,8 +1,6 @@
-// ============================================================
 // Durcissement (threat model : exposition internet 12/16)
 //  * en-têtes de sécurité HTTP (dont une CSP stricte)
-//  * limitation de débit (anti-abus) sur les routes sensibles
-// ============================================================
+
 const { HttpError } = require('../utils/http');
 
 const CSP = [
