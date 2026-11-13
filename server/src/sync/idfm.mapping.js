@@ -1,10 +1,7 @@
 // Synchronisation IDFM — fonctions PURES (aucun accès réseau ni base).
 // Source : jeu « État des ascenseurs » d'Île-de-France Mobilités.
-// Champs documentés par IDFM : liftId, liftStateUpdate, liftPrivateId,
-// liftSituation, liftDirection, liftStatus, liftReason, ZdCId, ZdCName,
-// ZdCXEpsg2154, ZdCYEpsg2154.
 
-/** Minuscules, sans accents ni ponctuation : "Châtelet - Les Halles" → "chatelet les halles". */
+/** Minuscules, sans accents ni ponctuation : "Châtelet - Les Halles" - "chatelet les halles". */
 function normaliser(texte) {
   return String(texte ?? '')
     .normalize('NFD')
@@ -41,10 +38,6 @@ function lireDate(valeur) {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
-/**
- * Transforme un enregistrement brut (clés insensibles à la casse) en objet interne.
- * Retourne null si l'enregistrement est inutilisable (pas d'identifiant ascenseur ou de zone).
- */
 function normaliserEnregistrement(brut) {
   if (!brut || typeof brut !== 'object') return null;
   const r = {};
@@ -83,11 +76,6 @@ function normaliserTout(bruts) {
 
 /**
  * Associe chaque zone IDFM à une de nos stations.
- *  1. par ref_zdc déjà mémorisé (robuste aux changements de nom) ;
- *  2. sinon par nom normalisé identique ;
- *  3. sinon par table d'alias explicite { nom IDFM normalisé : nom de notre station }.
- * Pas de correspondance approximative : une erreur d'association afficherait l'état
- * d'une autre station, ce qui est pire qu'une station « inconnue ».
  * @returns {{ associations: Map<string, object>, zonesNonRapprochees: Map<string,string> }}
  */
 function rapprocherZones(enregistrements, stations, alias = {}) {

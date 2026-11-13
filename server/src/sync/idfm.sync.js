@@ -1,6 +1,5 @@
-// Synchronisation IDFM → PostgreSQL.
+// Synchronisation IDFM - PostgreSQL.
 // idempotente : on peut la lancer autant de fois qu'on veut ;
-// transactionnelle : tout est appliqué ou rien ;
 // prudente : une station non rapprochée n'est jamais touchée,
 // un ascenseur qui disparaît du flux passe en « inconnu » (jamais « disponible »)
 
@@ -61,14 +60,14 @@ async function synchroniser(bruts, { dryRun = false, purgerDemo = false, alias =
   await transaction(async client => {
     const idsStations = [...new Set([...associations.values()].map(s => s.id_station))];
 
-    // 1. Mémoriser la zone IDFM sur la station (clé de rapprochement stable).
+    // Mémoriser la zone IDFM sur la station (clé de rapprochement stable).
     for (const [zdcId, station] of associations) {
       if (!station.ref_zdc) {
         await client.query('UPDATE station SET ref_zdc = $1 WHERE id_station = $2 AND ref_zdc IS NULL', [zdcId, station.id_station]);
       }
     }
 
-    // 2. Upsert des ascenseurs (clé = ref_externe = liftId).
+    // Upsert des ascenseurs (clé = ref_externe = liftId).
     for (const e of retenus) {
       const { rows } = await client.query(
         `INSERT INTO ascenseur (statut, cause_panne, date_maj, ref_externe, libelle, id_station)
@@ -85,7 +84,7 @@ async function synchroniser(bruts, { dryRun = false, purgerDemo = false, alias =
       if (rows[0].insere) resume.inseres++; else resume.mis_a_jour++;
     }
 
-    // 3. Ascenseurs connus de ces stations mais absents du flux → « inconnu ».
+    // Ascenseurs connus de ces stations mais absents du flux → « inconnu ».
     const refs = retenus.map(e => e.ref_externe);
     const absent = await client.query(
       `UPDATE ascenseur SET statut = 'inconnu', cause_panne = NULL
@@ -97,7 +96,7 @@ async function synchroniser(bruts, { dryRun = false, purgerDemo = false, alias =
     );
     resume.passes_inconnu = absent.rowCount;
 
-    // 4. Les ascenseurs de démonstration des stations désormais couvertes par de vraies données disparaissent.
+    // Les ascenseurs de démonstration des stations désormais couvertes par de vraies données disparaissent.
     const demo = await client.query(
       `DELETE FROM ascenseur WHERE ref_externe LIKE 'DEMO-%' AND ($1::boolean OR id_station = ANY($2::int[]))`,
       [purgerDemo, idsStations]
