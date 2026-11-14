@@ -13,7 +13,7 @@ export interface DonneesBorne {
 }
 
 /** Charge la config de la borne, les stations et les ascenseurs, et rafraîchit
- *  l'état des ascenseurs régulièrement (la donnée source change ~3 fois par jour). */
+ *  l'état des ascenseurs régulièrement (la donnée source change 3 fois par jour). */
 export function useDonneesBorne(): DonneesBorne {
   const [config, setConfig] = useState<KioskConfig | null>(null);
   const [stations, setStations] = useState<Station[]>([]);
